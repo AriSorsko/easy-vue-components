@@ -4,7 +4,28 @@
   </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+/deep/ .headerName {
+  font-style: italic;
+}
+/deep/ .name {
+  color: blue;
+}
+
+/deep/ .headerWins {
+  font-style: italic;
+}
+/deep/ .wins {
+  color: green;
+}
+
+/deep/ .headerLosses {
+  font-style: italic;
+}
+/deep/ .losses {
+  color: red;
+}
+</style>
 
 <script>
 import EasyTable from "./EasyTable";
@@ -24,10 +45,10 @@ export default {
         {
           header: "Number of Wins",
           property: "wins",
-          width: "120px",
+          width: "130px",
         },
         {
-          header: "Number of Loses",
+          header: "Number of Losses",
           property: "losses",
           width: "140px",
         },
