@@ -24,10 +24,12 @@ export default {
         {
           header: "Number of Wins",
           property: "wins",
+          width: "120px",
         },
         {
           header: "Number of Loses",
           property: "losses",
+          width: "140px",
         },
       ],
       teams: [

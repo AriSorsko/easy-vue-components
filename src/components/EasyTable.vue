@@ -33,8 +33,9 @@ export default {
   computed: {
     columnWidthsStyle() {
       let columnsWidths = "grid-template-columns:";
-      this.columns.forEach(() => {
-        columnsWidths += " auto";
+      this.columns.forEach((column) => {
+        if (column.width) columnsWidths += ` ${column.width}`;
+        else columnsWidths += " auto";
       });
       return columnsWidths;
     },
