@@ -1,6 +1,6 @@
 <template>
   <div>
-    <EasyTable :columns="columns" :rows="teams" />
+    <EasyTable :columns="columns" :rows="teams" :fixedHeader="true" />
   </div>
 </template>
 
@@ -86,6 +86,42 @@ export default {
         },
         {
           name: "Dolphins",
+          wins: 11,
+          losses: 13,
+        },
+
+        {
+          name: "Eagles",
+          wins: 16,
+          losses: 8,
+        },
+        {
+          name: "Sharks",
+          wins: 8,
+          losses: 16,
+        },
+        {
+          name: "Dragons",
+          wins: 24,
+          losses: 0,
+        },
+        {
+          name: "Snails",
+          wins: 0,
+          losses: 24,
+        },
+        {
+          name: "Tigers",
+          wins: 12,
+          losses: 12,
+        },
+        {
+          name: "Cheetahs",
+          wins: 13,
+          losses: 11,
+        },
+        {
+          name: "Elephants",
           wins: 11,
           losses: 13,
         },

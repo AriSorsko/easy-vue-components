@@ -28,6 +28,12 @@
   display: grid;
 }
 
+.fixedHeader {
+  position: sticky;
+  top: 0;
+  background-color: white;
+}
+
 .headerCell {
   font-weight: bold;
 }
@@ -41,6 +47,10 @@ export default {
   props: {
     columns: Array,
     rows: Array,
+    fixedHeader: {
+      type: Boolean,
+      default: false,
+    },
   },
   computed: {
     columnWidthsStyle() {
@@ -54,7 +64,10 @@ export default {
   },
   methods: {
     generateHeaderClasses(header) {
-      return header + " " + camelCase("header " + header);
+      let classes = header;
+      classes += " " + camelCase("header " + header);
+      if (this.fixedHeader) classes += " fixedHeader";
+      return classes;
     },
   },
 };
