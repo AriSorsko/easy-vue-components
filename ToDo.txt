@@ -1,0 +1,7 @@
+Sort
+Slots
+Multiselect(checkboxes)
+Single select (radio buttons)
+Even/odd row class names
+Even/Odd column class names
+Grouping (Header rows on groups)
