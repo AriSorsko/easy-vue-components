@@ -1,7 +1,17 @@
-Sort
-Slots
-Multiselect(checkboxes)
-Single select (radio buttons)
+
 Even/odd row class names
-Even/Odd column class names
-Grouping (Header rows on groups)
+Even/odd column class names
+Filter + highlighting
+Slots
+Sort
+Multiselect (checkboxes)
+Single select (radio buttons)
+Paging
+Grouping 
+    Header rows on groups
+    Design so that a single row can be in multiple groups
+    Support filter function or array of matching items
+Error checking
+    Required props
+    When all cells in a column are empty, was the field in the row objects? Was a similar field in the row objects?
+    passed slots that don't match

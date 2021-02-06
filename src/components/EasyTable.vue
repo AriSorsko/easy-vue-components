@@ -1,23 +1,25 @@
 <template>
-  <div id="container" :style="columnWidthsStyle">
+  <div id="container" :style="columnWidthsStyle"  ref="container">
     <!-- Headings -->
     <div
-      v-for="column in columns"
+      v-for="(column, index) in columns"
       :key="column.header"
       class="headerCell"
       :class="generateHeaderClasses(column.property)"
+      :ref="'headerCell_' + index"
     >
       {{ column.header }}
     </div>
     <!-- Data Rows -->
-    <div v-for="column in columns" :key="column.property">
+    <div v-for="(column, cindex) in columns" :key="column.property">
       <div
-        v-for="(row, index) in rows"
-        :key="index"
+        v-for="(row, rindex) in rows"
+        :key="rindex"
         class="dataCell"
         :class="column.property"
+        :ref="'rowCell_' + rindex + '_' + cindex"
       >
-        {{ row[column.property] }}
+        {{ row[column.property] }} {{ "rowCell_" + rindex + "_" + cindex }}
       </div>
     </div>
   </div>
