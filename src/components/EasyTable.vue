@@ -1,25 +1,30 @@
 <template>
-  <div id="container" :style="columnWidthsStyle"  ref="container">
-    <!-- Headings -->
-    <div
-      v-for="(column, index) in columns"
-      :key="column.header"
-      class="headerCell"
-      :class="generateHeaderClasses(column.property)"
-      :ref="'headerCell_' + index"
-    >
-      {{ column.header }}
-    </div>
-    <!-- Data Rows -->
-    <div v-for="(column, cindex) in columns" :key="column.property">
+  <div>
+    <div id="container" :style="columnWidthsStyle" ref="container">
+      <!-- Headings -->
       <div
-        v-for="(row, rindex) in rows"
-        :key="rindex"
-        class="dataCell"
-        :class="column.property"
-        :ref="'rowCell_' + rindex + '_' + cindex"
+        v-for="(column, index) in columns"
+        :key="column.header"
+        class="headerCell"
+        :class="generateHeaderClasses(column.property)"
+        :ref="'headerCell_' + index"
       >
-        {{ row[column.property] }} {{ "rowCell_" + rindex + "_" + cindex }}
+        {{ column.header }}
+      </div>
+      <!-- Data Rows -->
+      <div v-if="!rows || rows.length === 0" id="noDataMessage">
+        There is no data for this table.
+      </div>
+      <div v-else v-for="(column, cindex) in columns" :key="column.property">
+        <div
+          v-for="(row, rindex) in rows"
+          :key="rindex"
+          class="dataCell"
+          :class="column.property"
+          :ref="'rowCell_' + rindex + '_' + cindex"
+        >
+          {{ row[column.property] }}
+        </div>
       </div>
     </div>
   </div>
@@ -28,6 +33,10 @@
 <style scoped>
 #container {
   display: grid;
+}
+
+#noDataMessage {
+  grid-column: 1/-1;
 }
 
 .fixedHeader {

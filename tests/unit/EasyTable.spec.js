@@ -124,4 +124,12 @@ describe("EasyTable.vue", () => {
       "grid-template-columns: auto 140px 150px;"
     );
   });
+
+  it("Empty table message is rendered when there are no rows", () => {
+    const wrapper = mount(EasyTable, {
+      propsData: { columns, rows: [] },
+    });
+
+    expect(wrapper.text()).toContain("There is no data for this table.");
+  });
 });
