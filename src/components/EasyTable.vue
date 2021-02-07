@@ -10,14 +10,21 @@
         :ref="'headerCell_' + index"
       >
         {{ column.header }}
+        <span v-if="column.sortable || column.initialSort">
+          <ArrowUpIcon
+            v-if="columnSortDirection[column.property] === 'asc'"
+            @click="reverseSort(column.property)"
+          />
+          <ArrowDownIcon v-else @click="reverseSort(column.property)" />
+        </span>
       </div>
       <!-- Data Rows -->
-      <div v-if="!rows || rows.length === 0" id="noDataMessage">
+      <div v-if="!sortedRows || sortedRows.length === 0" id="noDataMessage">
         There is no data for this table.
       </div>
       <div
         v-else
-        v-for="(row, rindex) in rows"
+        v-for="(row, rindex) in sortedRows"
         :key="rindex"
         class="collapseDivs"
       >
@@ -74,9 +81,18 @@
 
 <script>
 import camelCase from "lodash/camelCase";
+import sortBy from "lodash/sortBy";
+import cloneDeep from "lodash/cloneDeep";
+import reverse from "lodash/reverse";
+import ArrowDownIcon from "vue-material-design-icons/ArrowDown.vue";
+import ArrowUpIcon from "vue-material-design-icons/ArrowUp.vue";
 
 export default {
   name: "EasyTable",
+  components: {
+    ArrowDownIcon,
+    ArrowUpIcon,
+  },
   props: {
     columns: Array,
     rows: Array,
@@ -85,17 +101,93 @@ export default {
       default: false,
     },
   },
+  data() {
+    return {
+      sortedRows: [],
+      columnSortDirection: {},
+    };
+  },
+  created() {
+    if (!this.columns) {
+      console.error("columns is a required prop to the table");
+      return;
+    }
+    if (!Array.isArray(this.columns)) {
+      console.error(
+        "'columns' prop must be an array, not",
+        typeof this.columns
+      );
+      return;
+    }
+    if (this.columns.length === 0) {
+      console.warn("'columns' array is empty, no table data will be displayed");
+      return;
+    }
+    if (this.columns.find((c) => !c.property)) {
+      console.error("'property' is a required field on all columns");
+      return;
+    }
+    if (this.columns.find((c) => typeof c.property !== "string")) {
+      console.error("The 'property' field on all columns must be a string");
+      return;
+    }
+
+    if (this.rows) {
+      const initialSortColumns = this.columns.filter((c) => c.initialSort);
+      const sortableColumns = this.columns.filter((c) => c.sortable);
+      console.log("sortableColumns", sortableColumns);
+      let initialSortColumn;
+      if (initialSortColumns.length > 0) {
+        if (initialSortColumns.length > 1) {
+          const columnNames = initialSortColumns.map((c) => c.header);
+          console.warn(
+            `There are multiple initialSortColumns, please choose 1 column to initially sort by.
+            The current initial sort columns are: ` + columnNames.join(", ")
+          );
+        }
+        initialSortColumn = initialSortColumns[0];
+      } else {
+        if (sortableColumns.length > 0) {
+          initialSortColumn = sortableColumns[0];
+        }
+      }
+
+      this.sortedRows = cloneDeep(this.rows);
+
+      let sortingProperties = initialSortColumn
+        ? [initialSortColumn.property]
+        : [];
+      const sortableColumnProperties = sortableColumns.map((c) => c.property);
+      sortingProperties = sortingProperties.concat(sortableColumnProperties);
+      this.sortedRows = sortBy(this.sortedRows, sortingProperties);
+
+      sortingProperties.forEach((sortableColumnPropery) => {
+        this.columnSortDirection[sortableColumnPropery] = "asc";
+      });
+    }
+  },
   computed: {
     columnWidthsStyle() {
-      let columnsWidths = "grid-template-columns:";
-      this.columns.forEach((column) => {
-        if (column.width) columnsWidths += ` ${column.width}`;
-        else columnsWidths += " auto";
-      });
-      return columnsWidths;
+      if (Array.isArray(this.columns)) {
+        let columnsWidths = "grid-template-columns:";
+        this.columns.forEach((column) => {
+          if (column.width) columnsWidths += ` ${column.width}`;
+          else columnsWidths += " auto";
+        });
+        return columnsWidths;
+      } else {
+        return "";
+      }
     },
   },
   methods: {
+    reverseSort(columnProperty) {
+      this.sortedRows = sortBy(this.sortedRows, [columnProperty]);
+      if (this.columnSortDirection[columnProperty] === "asc") {
+        this.columnSortDirection[columnProperty] = "desc";
+        this.sortedRows = reverse(this.sortedRows);
+      } else this.columnSortDirection[columnProperty] = "asc";
+    },
     generateHeaderClasses(header, index) {
       let classes = header;
       classes += " " + camelCase("header " + header);

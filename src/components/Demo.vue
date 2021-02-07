@@ -61,16 +61,18 @@ export default {
         {
           header: "Team",
           property: "name",
+          initialSort: true,
         },
         {
           header: "Number of Wins",
           property: "wins",
-          width: "140px",
+          width: "170px",
+          sortable: true,
         },
         {
           header: "Number of Losses",
           property: "losses",
-          width: "150px",
+          width: "180px",
         },
         {
           header: "Edit",
@@ -80,8 +82,8 @@ export default {
       teams: [
         {
           name: "Panthers",
-          wins: 16,
-          losses: 8,
+          wins: 6,
+          losses: 18,
         },
         {
           name: "Bobcats",
@@ -109,6 +111,11 @@ export default {
           losses: 11,
         },
         {
+          name: "Bobcats",
+          wins: 6,
+          losses: 8,
+        },
+        {
           name: "Dolphins",
           wins: 11,
           losses: 13,
@@ -133,6 +140,11 @@ export default {
           name: "Snails",
           wins: 0,
           losses: 24,
+        },
+        {
+          name: "Bobcats",
+          wins: 7,
+          losses: 17,
         },
         {
           name: "Tigers",
