@@ -1,6 +1,10 @@
 <template>
   <div>
-    <EasyTable :columns="columns" :rows="teams" :fixedHeader="true" />
+    <EasyTable :columns="columns" :rows="teams" :fixedHeader="true">
+      <template v-slot:edit="row">
+        <button>Edit {{ row.name }}</button>
+      </template>
+    </EasyTable>
   </div>
 </template>
 
@@ -26,21 +30,21 @@
   color: red;
 }
 
-/deep/ .evenColumn {
+/* /deep/ .evenColumn {
   background-color: rgba(220, 220, 220, 0.5);
 }
 
 /deep/ .oddColumn {
   background-color: rgba(220, 220, 220, 0.2);
-}
+} */
 
-/* /deep/ .evenRow {
+/deep/ .evenRow {
   background-color: rgba(240, 248, 255, 0.5);
 }
 
 /deep/ .oddRow {
   background-color: rgba(240, 248, 255, 0.2);
-} */
+}
 </style>
 
 <script>
@@ -67,6 +71,10 @@ export default {
           header: "Number of Losses",
           property: "losses",
           width: "150px",
+        },
+        {
+          header: "Edit",
+          property: "edit",
         },
       ],
       teams: [

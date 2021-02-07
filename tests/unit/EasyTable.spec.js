@@ -16,6 +16,10 @@ const columns = [
     property: "losses",
     width: "150px",
   },
+  {
+    header: "Edit",
+    property: "edit",
+  },
 ];
 const rows = [
   {
@@ -120,7 +124,7 @@ describe("EasyTable.vue", () => {
 
     const container = wrapper.findComponent({ ref: "container" });
     expect(container.attributes("style")).toBe(
-      "grid-template-columns: auto 140px 150px;"
+      "grid-template-columns: auto 140px 150px auto;"
     );
   });
 
@@ -168,19 +172,29 @@ describe("EasyTable.vue", () => {
       propsData: { columns, rows },
     });
     const c00 = wrapper.findComponent({ ref: "rowCell_0_0" });
-    expect(c00.classes()).toContain("dataCell");
+    expect(c00.classes()).toContain("row");
     expect(c00.classes()).toContain("name");
 
     const c01 = wrapper.findComponent({ ref: "rowCell_0_1" });
-    expect(c01.classes()).toContain("dataCell");
+    expect(c01.classes()).toContain("row");
     expect(c01.classes()).toContain("wins");
 
     const c02 = wrapper.findComponent({ ref: "rowCell_0_2" });
-    expect(c02.classes()).toContain("dataCell");
+    expect(c02.classes()).toContain("row");
     expect(c02.classes()).toContain("losses");
 
     const c10 = wrapper.findComponent({ ref: "rowCell_1_0" });
-    expect(c10.classes()).toContain("dataCell");
+    expect(c10.classes()).toContain("row");
     expect(c10.classes()).toContain("name");
+  });
+
+  it("Default cell content is replacable with slots", () => {
+    const wrapper = mount(EasyTable, {
+      propsData: { columns, rows },
+      scopedSlots: {
+        edit: '<p slot-scope="edit">Slot Test</p>',
+      },
+    });
+    expect(wrapper.text()).toContain("Slot Test");
   });
 });

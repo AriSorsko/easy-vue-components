@@ -15,15 +15,21 @@
       <div v-if="!rows || rows.length === 0" id="noDataMessage">
         There is no data for this table.
       </div>
-      <div v-else v-for="(column, cindex) in columns" :key="column.property">
+      <div
+        v-else
+        v-for="(row, rindex) in rows"
+        :key="rindex"
+        class="collapseDivs"
+      >
         <div
-          v-for="(row, rindex) in rows"
-          :key="rindex"
-          class="dataCell"
+          v-for="(column, cindex) in columns"
+          :key="column.property + cindex"
           :class="generateCellClasses(column, cindex, rindex)"
           :ref="'rowCell_' + rindex + '_' + cindex"
         >
-          {{ row[column.property] }}
+          <slot :name="column.property" v-bind="row">
+            {{ row[column.property] }}
+          </slot>
         </div>
       </div>
     </div>
@@ -31,6 +37,22 @@
 </template>
 
 <style scoped>
+/* Here be magic. This tells browsers to treat this:
+    <div> <--- row div
+      <div>cell</div>
+      <div>cell</div>
+      <div>cell</div>
+    </div> <--- end row div
+    like it is this:
+    <div>cell</div>
+    <div>cell</div>
+    <div>cell</div>
+    Which in this context means all of the rows line up!
+*/
+.collapseDivs {
+  display: contents;
+}
+
 #container {
   display: grid;
 }
@@ -82,7 +104,8 @@ export default {
       return classes;
     },
     generateCellClasses(column, cindex, rindex) {
-      let classes = column.property;
+      let classes = "row ";
+      classes += column.property;
       classes += cindex % 2 === 0 ? " evenColumn" : " oddColumn";
       classes += rindex % 2 === 0 ? " evenRow" : " oddRow";
       return classes;
