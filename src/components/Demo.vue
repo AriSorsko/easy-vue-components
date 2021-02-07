@@ -25,6 +25,22 @@
 /deep/ .losses {
   color: red;
 }
+
+/deep/ .evenColumn {
+  background-color: rgba(220, 220, 220, 0.5);
+}
+
+/deep/ .oddColumn {
+  background-color: rgba(220, 220, 220, 0.2);
+}
+
+/* /deep/ .evenRow {
+  background-color: rgba(240, 248, 255, 0.5);
+}
+
+/deep/ .oddRow {
+  background-color: rgba(240, 248, 255, 0.2);
+} */
 </style>
 
 <script>

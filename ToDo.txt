@@ -1,6 +1,3 @@
-
-Even/odd row class names
-Even/odd column class names
 Filter + highlighting
 Slots
 Sort
@@ -15,3 +12,4 @@ Error checking
     Required props
     When all cells in a column are empty, was the field in the row objects? Was a similar field in the row objects?
     passed slots that don't match
+    

@@ -6,7 +6,7 @@
         v-for="(column, index) in columns"
         :key="column.header"
         class="headerCell"
-        :class="generateHeaderClasses(column.property)"
+        :class="generateHeaderClasses(column.property, index)"
         :ref="'headerCell_' + index"
       >
         {{ column.header }}
@@ -20,7 +20,7 @@
           v-for="(row, rindex) in rows"
           :key="rindex"
           class="dataCell"
-          :class="column.property"
+          :class="generateCellClasses(column, cindex, rindex)"
           :ref="'rowCell_' + rindex + '_' + cindex"
         >
           {{ row[column.property] }}
@@ -74,10 +74,17 @@ export default {
     },
   },
   methods: {
-    generateHeaderClasses(header) {
+    generateHeaderClasses(header, index) {
       let classes = header;
       classes += " " + camelCase("header " + header);
+      classes += index % 2 === 0 ? " evenColumn" : " oddColumn";
       if (this.fixedHeader) classes += " fixedHeader";
+      return classes;
+    },
+    generateCellClasses(column, cindex, rindex) {
+      let classes = column.property;
+      classes += cindex % 2 === 0 ? " evenColumn" : " oddColumn";
+      classes += rindex % 2 === 0 ? " evenRow" : " oddRow";
       return classes;
     },
   },
