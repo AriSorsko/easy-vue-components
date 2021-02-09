@@ -197,4 +197,89 @@ describe("EasyTable.vue", () => {
     });
     expect(wrapper.text()).toContain("Slot Test");
   });
+
+  it("Data starts sorted by initial sort column", () => {
+    const columns = [
+      {
+        header: "Team",
+        property: "name",
+        initialSort: true,
+      },
+      {
+        header: "Number of Wins",
+        property: "wins",
+        width: "140px",
+        sortable: true,
+      },
+    ];
+
+    const wrapper = mount(EasyTable, {
+      propsData: { columns, rows },
+    });
+
+    const c00 = wrapper.findComponent({ ref: "rowCell_0_0" });
+    expect(c00.text()).toBe("Bobcats");
+    const c10 = wrapper.findComponent({ ref: "rowCell_1_0" });
+    expect(c10.text()).toBe("Panthers");
+    const c20 = wrapper.findComponent({ ref: "rowCell_2_0" });
+    expect(c20.text()).toBe("Unicorns");
+  });
+
+  it("Sortable columns start with down arrow", () => {
+    const columns = [
+      {
+        header: "Team",
+        property: "name",
+        initialSort: true,
+      },
+      {
+        header: "Number of Wins",
+        property: "wins",
+        width: "140px",
+        sortable: true,
+      },
+    ];
+
+    const wrapper = mount(EasyTable, {
+      propsData: { columns, rows },
+    });
+
+    const ad0 = wrapper.findComponent({ ref: "arrowDown_0" });
+    expect(ad0).toBeTruthy();
+    const ad1 = wrapper.findComponent({ ref: "arrowDown_1" });
+    expect(ad1).toBeTruthy();
+  });
+
+  it("Clicking down arrow sorts by that column and changes to up arrow", () => {
+    const columns = [
+      {
+        header: "Team",
+        property: "name",
+        initialSort: true,
+      },
+      {
+        header: "Number of Wins",
+        property: "wins",
+        width: "140px",
+        sortable: true,
+      },
+    ];
+
+    const wrapper = mount(EasyTable, {
+      propsData: { columns, rows },
+    });
+
+    const ad1 = wrapper.findComponent({ ref: "arrowDown_1" });
+    ad1.trigger("click").then((result) => {
+      const c01 = wrapper.findComponent({ ref: "rowCell_0_1" });
+      expect(c01.text()).toBe(24);
+      const c11 = wrapper.findComponent({ ref: "rowCell_1_1" });
+      expect(c11.text()).toBe("16");
+      const c21 = wrapper.findComponent({ ref: "rowCell_2_1" });
+      expect(c21.text()).toBe("8");
+
+      const au1 = wrapper.findComponent({ ref: "arrowUp_0" });
+      expect(au1).toBeTruthy();
+    });
+  });
 });

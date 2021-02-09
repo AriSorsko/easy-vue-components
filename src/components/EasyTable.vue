@@ -11,11 +11,18 @@
       >
         {{ column.header }}
         <span v-if="column.sortable || column.initialSort">
-          <ArrowUpIcon
+          <font-awesome-icon
+            icon="arrow-down"
             v-if="columnSortDirection[column.property] === 'asc'"
             @click="reverseSort(column.property)"
+            :ref="'arrowDown_' + index"
           />
-          <ArrowDownIcon v-else @click="reverseSort(column.property)" />
+          <font-awesome-icon
+            icon="arrow-up"
+            v-else
+            @click="reverseSort(column.property)"
+            :ref="'arrowUp_' + index"
+          />
         </span>
       </div>
       <!-- Data Rows -->
@@ -84,15 +91,16 @@ import camelCase from "lodash/camelCase";
 import sortBy from "lodash/sortBy";
 import cloneDeep from "lodash/cloneDeep";
 import reverse from "lodash/reverse";
-import ArrowDownIcon from "vue-material-design-icons/ArrowDown.vue";
-import ArrowUpIcon from "vue-material-design-icons/ArrowUp.vue";
+import { library } from "@fortawesome/fontawesome-svg-core";
+import { faArrowUp, faArrowDown } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
+
+library.add(faArrowUp);
+library.add(faArrowDown);
 
 export default {
   name: "EasyTable",
-  components: {
-    ArrowDownIcon,
-    ArrowUpIcon,
-  },
+  components: { FontAwesomeIcon },
   props: {
     columns: Array,
     rows: Array,
@@ -135,7 +143,6 @@ export default {
     if (this.rows) {
       const initialSortColumns = this.columns.filter((c) => c.initialSort);
       const sortableColumns = this.columns.filter((c) => c.sortable);
-      console.log("sortableColumns", sortableColumns);
       let initialSortColumn;
       if (initialSortColumns.length > 0) {
         if (initialSortColumns.length > 1) {

@@ -1,6 +1,5 @@
+Detail/secondary row
 Filter + highlighting
-Slots
-Sort
 Multiselect (checkboxes)
 Single select (radio buttons)
 Paging
@@ -13,3 +12,8 @@ Error checking
     When all cells in a column are empty, was the field in the row objects? Was a similar field in the row objects?
     passed slots that don't match
 Header slots
+Cell decorator function 
+    Test on numbers with some being high, others low etc.
+Export to CSV
+Convert the cell level row/column css class to grid-template rows/columns
+Decide on a license
