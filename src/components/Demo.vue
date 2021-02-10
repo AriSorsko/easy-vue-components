@@ -1,10 +1,18 @@
 <template>
   <div>
-    <EasyTable :columns="columns" :rows="teams" :fixedHeader="true">
+    <EasyTable
+      :columns="columns"
+      :rows="teams"
+      :fixedHeader="true"
+      :enableRadioButtons="true"
+      :selectedItem.sync="selectedItem"
+    >
       <template v-slot:edit="row">
         <button>Edit {{ row.name }}</button>
       </template>
     </EasyTable>
+
+    <div>Selected Team: {{ selectedItem ? selectedItem.name : "none" }}</div>
   </div>
 </template>
 
@@ -57,6 +65,7 @@ export default {
   },
   data() {
     return {
+      selectedItem: null,
       columns: [
         {
           header: "Team",
@@ -163,6 +172,9 @@ export default {
         },
       ],
     };
+  },
+  created() {
+    this.selectedItem = this.teams[0];
   },
 };
 </script>

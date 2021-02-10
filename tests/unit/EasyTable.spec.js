@@ -272,7 +272,7 @@ describe("EasyTable.vue", () => {
     const ad1 = wrapper.findComponent({ ref: "arrowDown_1" });
     ad1.trigger("click").then((result) => {
       const c01 = wrapper.findComponent({ ref: "rowCell_0_1" });
-      expect(c01.text()).toBe(24);
+      expect(c01.text()).toBe("24");
       const c11 = wrapper.findComponent({ ref: "rowCell_1_1" });
       expect(c11.text()).toBe("16");
       const c21 = wrapper.findComponent({ ref: "rowCell_2_1" });
@@ -280,6 +280,64 @@ describe("EasyTable.vue", () => {
 
       const au1 = wrapper.findComponent({ ref: "arrowUp_0" });
       expect(au1).toBeTruthy();
+    });
+  });
+
+  it("enableRadioButtons prop adds a radio button row", () => {
+    const wrapper = mount(EasyTable, {
+      propsData: { columns, rows, enableRadioButtons: true },
+    });
+
+    const radio0 = wrapper.findComponent({ ref: "radio_0" });
+    expect(radio0).toBeTruthy();
+  });
+
+  it("enableRadioButtons prop adds a radio button row", () => {
+    const wrapper = mount(EasyTable, {
+      propsData: { columns, rows, enableRadioButtons: true },
+    });
+
+    const radio0 = wrapper.findComponent({ ref: "radio_0" });
+    expect(radio0).toBeTruthy;
+  });
+
+  it("selectedItem prop toggles the radio button for that row", () => {
+    const wrapper = mount(EasyTable, {
+      propsData: {
+        columns,
+        rows,
+        enableRadioButtons: true,
+        selectedItem: rows[0],
+      },
+    });
+
+    const radio0 = wrapper.findComponent({ ref: "radio_0" });
+    expect(radio0.element.checked).toBeTruthy();
+  });
+
+  it("enableRadioButtons prop adds a radio button row", () => {
+    const wrapper = mount(EasyTable, {
+      propsData: { columns, rows, enableRadioButtons: true },
+    });
+
+    const radio0 = wrapper.findComponent({ ref: "radio_0" });
+    expect(radio0).toBeTruthy;
+  });
+
+  it("Selecting a radio button emits an update for the selectedItem", () => {
+    const wrapper = mount(EasyTable, {
+      propsData: {
+        columns,
+        rows,
+        enableRadioButtons: true,
+      },
+    });
+
+    const radio1 = wrapper.findComponent({ ref: "radio_1" });
+    expect(radio1.element.checked).toBeFalsy();
+    radio1.trigger("click").then((reult) => {
+      expect(radio1.element.checked).toBeTruthy();
+      expect(wrapper.emitted("update:selectedItem")[0][0].name).toBe("Bobcats");
     });
   });
 });

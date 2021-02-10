@@ -2,6 +2,8 @@
   <div>
     <div id="container" :style="columnWidthsStyle" ref="container">
       <!-- Headings -->
+      <!-- Empty div to keep the headers lined up with their columns when there are radio buttons  -->
+      <div v-if="enableRadioButtons" />
       <div
         v-for="(column, index) in columns"
         :key="column.header"
@@ -35,6 +37,14 @@
         :key="rindex"
         class="collapseDivs"
       >
+        <input
+          v-if="enableRadioButtons"
+          type="radio"
+          :id="rindex"
+          :value="row"
+          v-model="internalSelectedItem"
+          :ref="'radio_' + rindex"
+        />
         <div
           v-for="(column, cindex) in columns"
           :key="column.property + cindex"
@@ -108,16 +118,25 @@ export default {
       type: Boolean,
       default: false,
     },
+    enableRadioButtons: {
+      type: Boolean,
+      default: false,
+    },
+    selectedItem: {
+      type: Object,
+      default: null,
+    },
   },
   data() {
     return {
       sortedRows: [],
       columnSortDirection: {},
+      internalSelectedItem: null,
     };
   },
   created() {
     if (!this.columns) {
-      console.error("columns is a required prop to the table");
+      console.error("columns is a required prop to easy table");
       return;
     }
     if (!Array.isArray(this.columns)) {
@@ -139,6 +158,11 @@ export default {
       console.error("The 'property' field on all columns must be a string");
       return;
     }
+    if (!this.enableRadioButtons && this.selectedItem) {
+      console.warn(
+        "The 'selectedItem' prop is only used with when radio buttons are enabled"
+      );
+    }
 
     if (this.rows) {
       const initialSortColumns = this.columns.filter((c) => c.initialSort);
@@ -154,9 +178,7 @@ export default {
         }
         initialSortColumn = initialSortColumns[0];
       } else {
-        if (sortableColumns.length > 0) {
-          initialSortColumn = sortableColumns[0];
-        }
+        if (sortableColumns.length > 0) initialSortColumn = sortableColumns[0];
       }
 
       this.sortedRows = cloneDeep(this.rows);
@@ -172,11 +194,29 @@ export default {
         this.columnSortDirection[sortableColumnPropery] = "asc";
       });
     }
+
+    if (this.selectedItem) {
+      if (this.rows.includes(this.selectedItem))
+        this.internalSelectedItem = this.selectedItem;
+      else
+        console.warn(
+          "The selected item is not one of the row items!",
+          this.selectedItem
+        );
+    }
+  },
+  watch: {
+    internalSelectedItem() {
+      this.$emit("update:selectedItem", this.internalSelectedItem);
+    },
   },
   computed: {
     columnWidthsStyle() {
       if (Array.isArray(this.columns)) {
         let columnsWidths = "grid-template-columns:";
+        if (this.enableRadioButtons) {
+          columnsWidths += " 2em";
+        }
         this.columns.forEach((column) => {
           if (column.width) columnsWidths += ` ${column.width}`;
           else columnsWidths += " auto";
