@@ -4,6 +4,8 @@
       <!-- Headings -->
       <!-- Empty div to keep the headers lined up with their columns when there are radio buttons  -->
       <div v-if="enableRadioButtons" />
+      <!-- Empty div to keep the headers lined up with their columns when there are check boxes  -->
+      <div v-if="enableCheckBoxes" />
       <div
         v-for="(column, index) in columns"
         :key="column.header"
@@ -44,6 +46,14 @@
           :value="row"
           v-model="internalSelectedItem"
           :ref="'radio_' + rindex"
+        />
+        <input
+          v-if="enableCheckBoxes"
+          type="checkbox"
+          :id="rindex"
+          :value="row"
+          v-model="internalSelectedItems"
+          :ref="'check_' + rindex"
         />
         <div
           v-for="(column, cindex) in columns"
@@ -126,15 +136,25 @@ export default {
       type: Object,
       default: null,
     },
+    enableCheckBoxes: {
+      type: Boolean,
+      default: false,
+    },
+    selectedItems: {
+      type: Array,
+      default: null,
+    },
   },
   data() {
     return {
       sortedRows: [],
       columnSortDirection: {},
       internalSelectedItem: null,
+      internalSelectedItems: [],
     };
   },
   created() {
+    // Error checking
     if (!this.columns) {
       console.error("columns is a required prop to easy table");
       return;
@@ -163,7 +183,13 @@ export default {
         "The 'selectedItem' prop is only used with when radio buttons are enabled"
       );
     }
+    if (!this.enableCheckBoxes && this.selectedItems) {
+      console.warn(
+        "The 'selectedItems' prop is only used with when check boxes are enabled"
+      );
+    }
 
+    // Handle sorting setup
     if (this.rows) {
       const initialSortColumns = this.columns.filter((c) => c.initialSort);
       const sortableColumns = this.columns.filter((c) => c.sortable);
@@ -195,6 +221,7 @@ export default {
       });
     }
 
+    // Handle radio buttons setup
     if (this.selectedItem) {
       if (this.rows.includes(this.selectedItem))
         this.internalSelectedItem = this.selectedItem;
@@ -204,10 +231,32 @@ export default {
           this.selectedItem
         );
     }
+
+    // Handle checkboxes setup
+    if (this.selectedItems) {
+      const selectedItemsNotInRows = this.selectedItems.filter(
+        (i) => !this.rows.includes(i)
+      );
+
+      const filteredSelected = this.selectedItems.filter(
+        (i) => !selectedItemsNotInRows.includes(i)
+      );
+      this.internalSelectedItems = this.internalSelectedItems.concat(
+        filteredSelected
+      );
+      if (selectedItemsNotInRows.length !== 0)
+        console.warn(
+          "The following selected items are not one of the row items!",
+          selectedItemsNotInRows
+        );
+    }
   },
   watch: {
     internalSelectedItem() {
       this.$emit("update:selectedItem", this.internalSelectedItem);
+    },
+    internalSelectedItems() {
+      this.$emit("update:selectedItems", this.internalSelectedItems);
     },
   },
   computed: {
@@ -215,6 +264,9 @@ export default {
       if (Array.isArray(this.columns)) {
         let columnsWidths = "grid-template-columns:";
         if (this.enableRadioButtons) {
+          columnsWidths += " 2em";
+        }
+        if (this.enableCheckBoxes) {
           columnsWidths += " 2em";
         }
         this.columns.forEach((column) => {

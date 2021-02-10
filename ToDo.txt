@@ -1,7 +1,5 @@
 Detail/secondary row
 Filter + highlighting
-Multiselect (checkboxes)
-Single select (radio buttons)
 Paging
 Grouping 
     Header rows on groups

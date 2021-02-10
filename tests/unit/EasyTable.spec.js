@@ -283,16 +283,7 @@ describe("EasyTable.vue", () => {
     });
   });
 
-  it("enableRadioButtons prop adds a radio button row", () => {
-    const wrapper = mount(EasyTable, {
-      propsData: { columns, rows, enableRadioButtons: true },
-    });
-
-    const radio0 = wrapper.findComponent({ ref: "radio_0" });
-    expect(radio0).toBeTruthy();
-  });
-
-  it("enableRadioButtons prop adds a radio button row", () => {
+  it("enableRadioButtons prop adds a radio button column", () => {
     const wrapper = mount(EasyTable, {
       propsData: { columns, rows, enableRadioButtons: true },
     });
@@ -315,15 +306,6 @@ describe("EasyTable.vue", () => {
     expect(radio0.element.checked).toBeTruthy();
   });
 
-  it("enableRadioButtons prop adds a radio button row", () => {
-    const wrapper = mount(EasyTable, {
-      propsData: { columns, rows, enableRadioButtons: true },
-    });
-
-    const radio0 = wrapper.findComponent({ ref: "radio_0" });
-    expect(radio0).toBeTruthy;
-  });
-
   it("Selecting a radio button emits an update for the selectedItem", () => {
     const wrapper = mount(EasyTable, {
       propsData: {
@@ -338,6 +320,52 @@ describe("EasyTable.vue", () => {
     radio1.trigger("click").then((reult) => {
       expect(radio1.element.checked).toBeTruthy();
       expect(wrapper.emitted("update:selectedItem")[0][0].name).toBe("Bobcats");
+    });
+  });
+
+  it("enableCheckBoxes prop adds a checkboxes column", () => {
+    const wrapper = mount(EasyTable, {
+      propsData: { columns, rows, enableCheckBoxes: true },
+    });
+
+    const check0 = wrapper.findComponent({ ref: "check_0" });
+    expect(check0).toBeTruthy();
+  });
+
+  it("selectedItems prop toggles the check boxes for those rows", () => {
+    const wrapper = mount(EasyTable, {
+      propsData: {
+        columns,
+        rows,
+        enableCheckBoxes: true,
+        selectedItems: [rows[0], rows[1]],
+      },
+    });
+
+    const check0 = wrapper.findComponent({ ref: "check_0" });
+    expect(check0.element.checked).toBeTruthy();
+    const check1 = wrapper.findComponent({ ref: "check_1" });
+    expect(check1.element.checked).toBeTruthy();
+    const check2 = wrapper.findComponent({ ref: "check_2" });
+    expect(check2.element.checked).toBeFalsy();
+  });
+
+  it("Selecting a check box emits an update for the selectedItems", () => {
+    const wrapper = mount(EasyTable, {
+      propsData: {
+        columns,
+        rows,
+        enableCheckBoxes: true,
+      },
+    });
+
+    const check1 = wrapper.findComponent({ ref: "check_1" });
+    expect(check1.element.checked).toBeFalsy();
+    check1.trigger("click").then((reult) => {
+      expect(check1.element.checked).toBeTruthy();
+      expect(wrapper.emitted("update:selectedItems")[0][0].name).toBe(
+        "Bobcats"
+      );
     });
   });
 });

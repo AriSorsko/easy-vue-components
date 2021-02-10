@@ -6,6 +6,8 @@
       :fixedHeader="true"
       :enableRadioButtons="true"
       :selectedItem.sync="selectedItem"
+      :enableCheckBoxes="true"
+      :selectedItems.sync="selectedItems"
     >
       <template v-slot:edit="row">
         <button>Edit {{ row.name }}</button>
@@ -13,6 +15,7 @@
     </EasyTable>
 
     <div>Selected Team: {{ selectedItem ? selectedItem.name : "none" }}</div>
+    <div>Selected Teams: {{ selectedItems.map((i) => i.name).join(", ") }}</div>
   </div>
 </template>
 
@@ -66,6 +69,7 @@ export default {
   data() {
     return {
       selectedItem: null,
+      selectedItems: [],
       columns: [
         {
           header: "Team",
@@ -175,6 +179,12 @@ export default {
   },
   created() {
     this.selectedItem = this.teams[0];
+    this.selectedItems.push(this.teams[2]);
+    this.selectedItems.push(this.teams[4]);
+    this.selectedItems.push(this.teams[6]);
+    this.selectedItems.push(this.teams[8]);
+    this.selectedItems.push(this.teams[10]);
+    // this.selectedItems.push({ test: "test!!!" });
   },
 };
 </script>
