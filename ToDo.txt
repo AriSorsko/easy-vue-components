@@ -1,5 +1,5 @@
-Detail/secondary row
 Filter + highlighting
+    Column level filtering? Or Just table level?
 Paging
 Grouping 
     Header rows on groups
@@ -15,3 +15,5 @@ Cell decorator function
 Export to CSV
 Convert the cell level row/column css class to grid-template rows/columns
 Decide on a license
+Decent default css
+Themes?

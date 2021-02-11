@@ -368,4 +368,30 @@ describe("EasyTable.vue", () => {
       );
     });
   });
+
+  it("Detail row cell content is replacable with slots", () => {
+    const wrapper = mount(EasyTable, {
+      propsData: { columns, rows },
+      scopedSlots: {
+        edit: `
+        <template v-slot:detailRowSlot="row">
+          Detail Slot
+        </template>`,
+      },
+    });
+    expect(wrapper.text()).toContain("Detail Slot");
+  });
+
+  it("enableAccordianforDetailRow prop shows the expand/collapse icons and thos icons work", () => {
+    const wrapper = mount(EasyTable, {
+      propsData: { columns, rows, enableAccordianforDetailRow: "single" },
+    });
+
+    const angleRight0 = wrapper.findComponent({ ref: "angleRight_0" });
+    expect(angleRight0).toBeTruthy();
+    angleRight0.trigger("click").then((reult) => {
+      const angleDown0 = wrapper.findComponent({ ref: "angleDown_0" });
+      expect(angleDown0).toBeTruthy();
+    });
+  });
 });

@@ -3,9 +3,12 @@
     <div id="container" :style="columnWidthsStyle" ref="container">
       <!-- Headings -->
       <!-- Empty div to keep the headers lined up with their columns when there are radio buttons  -->
+      <div v-if="enableAccordianforDetailRow" />
+      <!-- Empty div to keep the headers lined up with their columns when there are radio buttons  -->
       <div v-if="enableRadioButtons" />
       <!-- Empty div to keep the headers lined up with their columns when there are check boxes  -->
       <div v-if="enableCheckBoxes" />
+      <!-- TODO: have checkbox here that toggles all of the boxes -->
       <div
         v-for="(column, index) in columns"
         :key="column.header"
@@ -39,6 +42,25 @@
         :key="rindex"
         class="collapseDivs"
       >
+        <!-- Expand/Collapse controls for the details row -->
+        <div v-if="enableAccordianforDetailRow">
+          <div v-if="openDetailRows.includes(row)" @click="collapseRow(row)">
+            <slot name="expandedDetailRowIcon" v-bind="row">
+              <font-awesome-icon
+                icon="angle-down"
+                :ref="'angleDown_' + rindex"
+              />
+            </slot>
+          </div>
+          <div v-else @click="expandRow(row)">
+            <slot name="collapsedDetailRowIcon" v-bind="row">
+              <font-awesome-icon
+                icon="angle-right"
+                :ref="'angleRight_' + rindex"
+              />
+            </slot>
+          </div>
+        </div>
         <input
           v-if="enableRadioButtons"
           type="radio"
@@ -64,6 +86,14 @@
           <slot :name="column.property" v-bind="row">
             {{ row[column.property] }}
           </slot>
+        </div>
+
+        <div
+          class="detailRowSlot"
+          :key="JSON.stringify(row)"
+          v-if="!enableAccordianforDetailRow || openDetailRows.includes(row)"
+        >
+          <slot name="detailRowSlot" v-bind="row" />
         </div>
       </div>
     </div>
@@ -104,6 +134,10 @@
 .headerCell {
   font-weight: bold;
 }
+
+.detailRowSlot {
+  grid-column: 1/-1;
+}
 </style>
 
 <script>
@@ -112,11 +146,18 @@ import sortBy from "lodash/sortBy";
 import cloneDeep from "lodash/cloneDeep";
 import reverse from "lodash/reverse";
 import { library } from "@fortawesome/fontawesome-svg-core";
-import { faArrowUp, faArrowDown } from "@fortawesome/free-solid-svg-icons";
+import {
+  faArrowUp,
+  faArrowDown,
+  faAngleDown,
+  faAngleRight,
+} from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 
 library.add(faArrowUp);
 library.add(faArrowDown);
+library.add(faAngleDown);
+library.add(faAngleRight);
 
 export default {
   name: "EasyTable",
@@ -144,6 +185,10 @@ export default {
       type: Array,
       default: null,
     },
+    enableAccordianforDetailRow: {
+      type: String, // Can be single or multi
+      default: null,
+    },
   },
   data() {
     return {
@@ -151,6 +196,7 @@ export default {
       columnSortDirection: {},
       internalSelectedItem: null,
       internalSelectedItems: [],
+      openDetailRows: [],
     };
   },
   created() {
@@ -186,6 +232,17 @@ export default {
     if (!this.enableCheckBoxes && this.selectedItems) {
       console.warn(
         "The 'selectedItems' prop is only used with when check boxes are enabled"
+      );
+    }
+
+    if (
+      this.enableAccordianforDetailRow &&
+      this.enableAccordianforDetailRow !== "single" &&
+      this.enableAccordianforDetailRow !== "multi"
+    ) {
+      console.warn(
+        "The 'enableAccordianforDetailRow' prop should be 'single' or 'multi', not ",
+        this.enableAccordianforDetailRow
       );
     }
 
@@ -250,6 +307,8 @@ export default {
           selectedItemsNotInRows
         );
     }
+
+    // Handle details row accordian control setup
   },
   watch: {
     internalSelectedItem() {
@@ -269,6 +328,13 @@ export default {
         if (this.enableCheckBoxes) {
           columnsWidths += " 2em";
         }
+        if (
+          this.enableAccordianforDetailRow === "single" ||
+          this.enableAccordianforDetailRow === "multi"
+        ) {
+          columnsWidths += " 2em";
+        }
+
         this.columns.forEach((column) => {
           if (column.width) columnsWidths += ` ${column.width}`;
           else columnsWidths += " auto";
@@ -280,6 +346,14 @@ export default {
     },
   },
   methods: {
+    collapseRow(row) {
+      this.openDetailRows = this.openDetailRows.filter((r) => r !== row);
+    },
+    expandRow(row) {
+      if (this.enableAccordianforDetailRow === "single")
+        this.openDetailRows = [];
+      this.openDetailRows.push(row);
+    },
     reverseSort(columnProperty) {
       this.sortedRows = sortBy(this.sortedRows, [columnProperty]);
       if (this.columnSortDirection[columnProperty] === "asc") {
