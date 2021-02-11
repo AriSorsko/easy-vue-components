@@ -317,7 +317,7 @@ describe("EasyTable.vue", () => {
 
     const radio1 = wrapper.findComponent({ ref: "radio_1" });
     expect(radio1.element.checked).toBeFalsy();
-    radio1.trigger("click").then((reult) => {
+    radio1.trigger("click").then((result) => {
       expect(radio1.element.checked).toBeTruthy();
       expect(wrapper.emitted("update:selectedItem")[0][0].name).toBe("Bobcats");
     });
@@ -361,11 +361,42 @@ describe("EasyTable.vue", () => {
 
     const check1 = wrapper.findComponent({ ref: "check_1" });
     expect(check1.element.checked).toBeFalsy();
-    check1.trigger("click").then((reult) => {
+    check1.trigger("click").then((result) => {
       expect(check1.element.checked).toBeTruthy();
       expect(wrapper.emitted("update:selectedItems")[0][0].name).toBe(
         "Bobcats"
       );
+    });
+  });
+
+  it("Selecting the checkAll box selects all of the items", () => {
+    const wrapper = mount(EasyTable, {
+      propsData: {
+        columns,
+        rows,
+        enableCheckBoxes: true,
+      },
+    });
+
+    const checkAll = wrapper.findComponent({ ref: "checkAll" });
+    const check0 = wrapper.findComponent({ ref: "check_0" });
+    const check1 = wrapper.findComponent({ ref: "check_1" });
+    const check2 = wrapper.findComponent({ ref: "check_1" });
+    expect(checkAll.element.checked).toBeFalsy();
+    expect(check0.element.checked).toBeFalsy();
+    expect(check1.element.checked).toBeFalsy();
+    expect(check2.element.checked).toBeFalsy();
+    checkAll.trigger("click").then(() => {
+      expect(checkAll.element.checked).toBeTruthy();
+      expect(check0.element.checked).toBeTruthy();
+      expect(check1.element.checked).toBeTruthy();
+      expect(check2.element.checked).toBeTruthy();
+      checkAll.trigger("click").then(() => {
+        expect(checkAll.element.checked).toBeFalsy();
+        expect(check0.element.checked).toBeFalsy();
+        expect(check1.element.checked).toBeFalsy();
+        expect(check2.element.checked).toBeFalsy();
+      });
     });
   });
 
@@ -389,7 +420,7 @@ describe("EasyTable.vue", () => {
 
     const angleRight0 = wrapper.findComponent({ ref: "angleRight_0" });
     expect(angleRight0).toBeTruthy();
-    angleRight0.trigger("click").then((reult) => {
+    angleRight0.trigger("click").then((result) => {
       const angleDown0 = wrapper.findComponent({ ref: "angleDown_0" });
       expect(angleDown0).toBeTruthy();
     });

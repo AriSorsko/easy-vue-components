@@ -659,11 +659,22 @@ export default {
   },
   created() {
     this.selectedItem = this.teams[0];
+    this.selectedItems.push(this.teams[0]);
+    this.selectedItems.push(this.teams[1]);
     this.selectedItems.push(this.teams[2]);
+    this.selectedItems.push(this.teams[3]);
     this.selectedItems.push(this.teams[4]);
+    this.selectedItems.push(this.teams[5]);
     this.selectedItems.push(this.teams[6]);
+    this.selectedItems.push(this.teams[7]);
     this.selectedItems.push(this.teams[8]);
+    this.selectedItems.push(this.teams[9]);
     this.selectedItems.push(this.teams[10]);
+    this.selectedItems.push(this.teams[11]);
+    this.selectedItems.push(this.teams[12]);
+    this.selectedItems.push(this.teams[13]);
+    this.selectedItems.push(this.teams[14]);
+    this.selectedItems.push(this.teams[15]);
     // this.selectedItems.push({ test: "test!!!" });
   },
 };

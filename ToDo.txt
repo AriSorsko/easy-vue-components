@@ -17,3 +17,5 @@ Convert the cell level row/column css class to grid-template rows/columns
 Decide on a license
 Decent default css
 Themes?
+See if the prop warnings can utilize prop validator functions
+    https://vuejs.org/v2/guide/components-props.html#Type-Checks

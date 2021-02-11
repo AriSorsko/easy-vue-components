@@ -6,9 +6,15 @@
       <div v-if="enableAccordianforDetailRow" />
       <!-- Empty div to keep the headers lined up with their columns when there are radio buttons  -->
       <div v-if="enableRadioButtons" />
-      <!-- Empty div to keep the headers lined up with their columns when there are check boxes  -->
-      <div v-if="enableCheckBoxes" />
-      <!-- TODO: have checkbox here that toggles all of the boxes -->
+      <!-- Toggle all of the check boxes  -->
+      <input
+        v-if="enableCheckBoxes"
+        type="checkbox"
+        v-model="checkAll"
+        value="checkAll"
+        ref="checkAll"
+        @click="checkAllToggled"
+      />
       <div
         v-for="(column, index) in columns"
         :key="column.header"
@@ -197,6 +203,7 @@ export default {
       internalSelectedItem: null,
       internalSelectedItems: [],
       openDetailRows: [],
+      checkAll: [],
     };
   },
   created() {
@@ -301,14 +308,13 @@ export default {
       this.internalSelectedItems = this.internalSelectedItems.concat(
         filteredSelected
       );
+      this.checkAll = this.internalSelectedItems.length === this.rows.length;
       if (selectedItemsNotInRows.length !== 0)
         console.warn(
           "The following selected items are not one of the row items!",
           selectedItemsNotInRows
         );
     }
-
-    // Handle details row accordian control setup
   },
   watch: {
     internalSelectedItem() {
@@ -316,6 +322,7 @@ export default {
     },
     internalSelectedItems() {
       this.$emit("update:selectedItems", this.internalSelectedItems);
+      this.checkAll = this.internalSelectedItems.length === this.rows.length;
     },
   },
   computed: {
@@ -346,6 +353,14 @@ export default {
     },
   },
   methods: {
+    checkAllToggled() {
+      this.internalSelectedItems = [];
+      if (!this.checkAll) {
+        this.internalSelectedItems = this.internalSelectedItems.concat(
+          this.rows
+        );
+      }
+    },
     collapseRow(row) {
       this.openDetailRows = this.openDetailRows.filter((r) => r !== row);
     },
