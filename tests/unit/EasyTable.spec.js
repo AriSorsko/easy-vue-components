@@ -270,7 +270,7 @@ describe("EasyTable.vue", () => {
     });
 
     const ad1 = wrapper.findComponent({ ref: "arrowDown_1" });
-    ad1.trigger("click").then((result) => {
+    ad1.trigger("click").then(() => {
       const c01 = wrapper.findComponent({ ref: "rowCell_0_1" });
       expect(c01.text()).toBe("24");
       const c11 = wrapper.findComponent({ ref: "rowCell_1_1" });
@@ -317,7 +317,7 @@ describe("EasyTable.vue", () => {
 
     const radio1 = wrapper.findComponent({ ref: "radio_1" });
     expect(radio1.element.checked).toBeFalsy();
-    radio1.trigger("click").then((result) => {
+    radio1.trigger("click").then(() => {
       expect(radio1.element.checked).toBeTruthy();
       expect(wrapper.emitted("update:selectedItem")[0][0].name).toBe("Bobcats");
     });
@@ -361,7 +361,7 @@ describe("EasyTable.vue", () => {
 
     const check1 = wrapper.findComponent({ ref: "check_1" });
     expect(check1.element.checked).toBeFalsy();
-    check1.trigger("click").then((result) => {
+    check1.trigger("click").then(() => {
       expect(check1.element.checked).toBeTruthy();
       expect(wrapper.emitted("update:selectedItems")[0][0].name).toBe(
         "Bobcats"
@@ -369,7 +369,7 @@ describe("EasyTable.vue", () => {
     });
   });
 
-  it("Selecting the checkAll box selects all of the items", () => {
+  it("The checkAll box toggles all of the items", () => {
     const wrapper = mount(EasyTable, {
       propsData: {
         columns,
@@ -420,7 +420,7 @@ describe("EasyTable.vue", () => {
 
     const angleRight0 = wrapper.findComponent({ ref: "angleRight_0" });
     expect(angleRight0).toBeTruthy();
-    angleRight0.trigger("click").then((result) => {
+    angleRight0.trigger("click").then(() => {
       const angleDown0 = wrapper.findComponent({ ref: "angleDown_0" });
       expect(angleDown0).toBeTruthy();
     });
