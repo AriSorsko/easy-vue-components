@@ -10,6 +10,7 @@
       :selectedItems.sync="selectedItems"
       id="teamsTable"
       enableAccordianforDetailRow="multi"
+      :tableSearching="true"
     >
       <template v-slot:expandedDetailRowIcon>
         <font-awesome-icon icon="minus" />

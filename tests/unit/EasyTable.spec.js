@@ -425,4 +425,19 @@ describe("EasyTable.vue", () => {
       expect(angleDown0).toBeTruthy();
     });
   });
+
+  it("The table rows are filtered based on the table search term", () => {
+    const wrapper = mount(EasyTable, {
+      propsData: { columns, rows, tableSearching: true },
+    });
+
+    const searchInput = wrapper.findComponent({ ref: "searchInput" });
+    expect(searchInput).toBeTruthy();
+    const firstCell = wrapper.findComponent({ ref: "rowCell_0_0" });
+    expect(firstCell.text()).toContain("Panthers");
+    searchInput.setValue("0").then(() => {
+      const firstFilteredCell = wrapper.findComponent({ ref: "rowCell_0_0" });
+      expect(firstFilteredCell.text()).toContain("Unicorns");
+    });
+  });
 });

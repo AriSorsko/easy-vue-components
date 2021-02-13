@@ -1,8 +1,16 @@
 <template>
   <div>
+    <input
+      v-if="tableSearching"
+      v-model="tableSearch"
+      placeholder="Search"
+      class="searchInput"
+      id="searchInput"
+      ref="searchInput"
+    />
     <div id="container" :style="columnWidthsStyle" ref="container">
       <!-- Headings -->
-      <!-- Empty div to keep the headers lined up with their columns when there are radio buttons  -->
+      <!-- Empty div to keep the headers lined up with their columns when there are exapnd/collapse buttons  -->
       <div v-if="enableAccordianforDetailRow" />
       <!-- Empty div to keep the headers lined up with their columns when there are radio buttons  -->
       <div v-if="enableRadioButtons" />
@@ -39,12 +47,15 @@
         </span>
       </div>
       <!-- Data Rows -->
-      <div v-if="!sortedRows || sortedRows.length === 0" id="noDataMessage">
+      <div
+        v-if="!sortedAndFilteredRows || sortedAndFilteredRows.length === 0"
+        id="noDataMessage"
+      >
         There is no data for this table.
       </div>
       <div
         v-else
-        v-for="(row, rindex) in sortedRows"
+        v-for="(row, rindex) in sortedAndFilteredRows"
         :key="rindex"
         class="collapseDivs"
       >
@@ -144,6 +155,10 @@
 .detailRowSlot {
   grid-column: 1/-1;
 }
+
+.searchInput {
+  display: block;
+}
 </style>
 
 <script>
@@ -195,6 +210,10 @@ export default {
       type: String, // Can be single or multi
       default: null,
     },
+    tableSearching: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
@@ -204,6 +223,7 @@ export default {
       internalSelectedItems: [],
       openDetailRows: [],
       checkAll: [],
+      tableSearch: "",
     };
   },
   created() {
@@ -242,6 +262,8 @@ export default {
       );
     }
 
+    if (!this.rows) return;
+
     if (
       this.enableAccordianforDetailRow &&
       this.enableAccordianforDetailRow !== "single" &&
@@ -254,36 +276,32 @@ export default {
     }
 
     // Handle sorting setup
-    if (this.rows) {
-      const initialSortColumns = this.columns.filter((c) => c.initialSort);
-      const sortableColumns = this.columns.filter((c) => c.sortable);
-      let initialSortColumn;
-      if (initialSortColumns.length > 0) {
-        if (initialSortColumns.length > 1) {
-          const columnNames = initialSortColumns.map((c) => c.header);
-          console.warn(
-            `There are multiple initialSortColumns, please choose 1 column to initially sort by.
+    const initialSortColumns = this.columns.filter((c) => c.initialSort);
+    const sortableColumns = this.columns.filter((c) => c.sortable);
+    let initialSortColumn;
+    if (initialSortColumns.length > 0) {
+      if (initialSortColumns.length > 1) {
+        const columnNames = initialSortColumns.map((c) => c.header);
+        console.warn(
+          `There are multiple initialSortColumns, please choose 1 column to initially sort by.
             The current initial sort columns are: ` + columnNames.join(", ")
-          );
-        }
-        initialSortColumn = initialSortColumns[0];
-      } else {
-        if (sortableColumns.length > 0) initialSortColumn = sortableColumns[0];
+        );
       }
-
-      this.sortedRows = cloneDeep(this.rows);
-
-      let sortingProperties = initialSortColumn
-        ? [initialSortColumn.property]
-        : [];
-      const sortableColumnProperties = sortableColumns.map((c) => c.property);
-      sortingProperties = sortingProperties.concat(sortableColumnProperties);
-      this.sortedRows = sortBy(this.sortedRows, sortingProperties);
-
-      sortingProperties.forEach((sortableColumnPropery) => {
-        this.columnSortDirection[sortableColumnPropery] = "asc";
-      });
+      initialSortColumn = initialSortColumns[0];
+    } else {
+      if (sortableColumns.length > 0) initialSortColumn = sortableColumns[0];
     }
+    this.sortedRows = cloneDeep(this.rows);
+    let sortingProperties = initialSortColumn
+      ? [initialSortColumn.property]
+      : [];
+    const sortableColumnProperties = sortableColumns.map((c) => c.property);
+    sortingProperties = sortingProperties.concat(sortableColumnProperties);
+    this.sortedRows = sortBy(this.sortedRows, sortingProperties);
+
+    sortingProperties.forEach((sortableColumnPropery) => {
+      this.columnSortDirection[sortableColumnPropery] = "asc";
+    });
 
     // Handle radio buttons setup
     if (this.selectedItem) {
@@ -326,6 +344,14 @@ export default {
     },
   },
   computed: {
+    sortedAndFilteredRows() {
+      if (!this.tableSearch) return this.sortedRows;
+      return this.sortedRows.filter((row) => {
+        return this.stringifyRow(row)
+          .toLowerCase()
+          .includes(this.tableSearch.toLowerCase());
+      });
+    },
     columnWidthsStyle() {
       if (Array.isArray(this.columns)) {
         let columnsWidths = "grid-template-columns:";
@@ -353,6 +379,16 @@ export default {
     },
   },
   methods: {
+    stringifyRow(row) {
+      return this.columns
+        .map((column) => row[column.property])
+        .reduce((accumulator, curVal) => {
+          if (curVal !== undefined) {
+            accumulator += " " + curVal;
+          }
+          return accumulator;
+        });
+    },
     checkAllToggled() {
       this.internalSelectedItems = [];
       if (!this.checkAll) {
