@@ -1,6 +1,3 @@
-Filter + highlighting
-    Column level filtering? Or Just table level?
-Paging
 Grouping 
     Header rows on groups
     Design so that a single row can be in multiple groups
@@ -12,10 +9,18 @@ Error checking
 Header slots
 Cell decorator function 
     Test on numbers with some being high, others low etc.
+Column specific search functions
+    Demo with dates? and/or 
 Export to CSV
+Column level filtering
+Update checkall box to include inderterminate state and data variable to calculated
+Search term highlighting
 Convert the cell level row/column css class to grid-template rows/columns
 Decide on a license
 Decent default css
+Partial data sets (loading page 0-20 of 5000)
+    Warning: search/sort/paging need to be handled by the parent in this case!
+    Include loading indicator
 Themes?
 See if the prop warnings can utilize prop validator functions
     https://vuejs.org/v2/guide/components-props.html#Type-Checks

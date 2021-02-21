@@ -1,13 +1,14 @@
 <template>
   <div>
     <input
-      v-if="tableSearching"
+      v-if="enableTableSearching"
       v-model="tableSearch"
       placeholder="Search"
       class="searchInput"
       id="searchInput"
       ref="searchInput"
     />
+
     <div id="container" :style="columnWidthsStyle" ref="container">
       <!-- Headings -->
       <!-- Empty div to keep the headers lined up with their columns when there are exapnd/collapse buttons  -->
@@ -48,14 +49,14 @@
       </div>
       <!-- Data Rows -->
       <div
-        v-if="!sortedAndFilteredRows || sortedAndFilteredRows.length === 0"
+        v-if="!sortedFilteredPagedRows || sortedFilteredPagedRows.length === 0"
         id="noDataMessage"
       >
         There is no data for this table.
       </div>
       <div
         v-else
-        v-for="(row, rindex) in sortedAndFilteredRows"
+        v-for="(row, rindex) in sortedFilteredPagedRows"
         :key="rindex"
         class="collapseDivs"
       >
@@ -114,6 +115,15 @@
         </div>
       </div>
     </div>
+
+    <div v-if="enablePaging" id="pagingControls" class="pagingControls">
+      <Pages
+        :numberOfitems="sortedFilteredRows.length"
+        :itemsPerPage="5"
+        :startIndex.sync="startIndex"
+        :endIndex.sync="endIndex"
+      />
+    </div>
   </div>
 </template>
 
@@ -166,6 +176,7 @@ import camelCase from "lodash/camelCase";
 import sortBy from "lodash/sortBy";
 import cloneDeep from "lodash/cloneDeep";
 import reverse from "lodash/reverse";
+import Pages from "./Pages";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
   faArrowUp,
@@ -182,7 +193,7 @@ library.add(faAngleRight);
 
 export default {
   name: "EasyTable",
-  components: { FontAwesomeIcon },
+  components: { FontAwesomeIcon, Pages },
   props: {
     columns: Array,
     rows: Array,
@@ -210,10 +221,15 @@ export default {
       type: String, // Can be single or multi
       default: null,
     },
-    tableSearching: {
+    enableTableSearching: {
       type: Boolean,
       default: false,
     },
+    enablePaging: {
+      type: Boolean,
+      default: false,
+    },
+    rowsPerPage: Number,
   },
   data() {
     return {
@@ -222,8 +238,10 @@ export default {
       internalSelectedItem: null,
       internalSelectedItems: [],
       openDetailRows: [],
-      checkAll: [],
+      checkAll: true,
       tableSearch: "",
+      startIndex: 0,
+      endIndex: 0,
     };
   },
   created() {
@@ -253,12 +271,17 @@ export default {
     }
     if (!this.enableRadioButtons && this.selectedItem) {
       console.warn(
-        "The 'selectedItem' prop is only used with when radio buttons are enabled"
+        "The 'selectedItem' prop is only used when radio buttons are enabled"
       );
     }
     if (!this.enableCheckBoxes && this.selectedItems) {
       console.warn(
-        "The 'selectedItems' prop is only used with when check boxes are enabled"
+        "The 'selectedItems' prop is only used when check boxes are enabled"
+      );
+    }
+    if (this.rowsPerPage && !this.enablePaging) {
+      console.warn(
+        "The 'rowsPerPage' prop is only used when the 'enablePaging' prop is enabled"
       );
     }
 
@@ -344,14 +367,6 @@ export default {
     },
   },
   computed: {
-    sortedAndFilteredRows() {
-      if (!this.tableSearch) return this.sortedRows;
-      return this.sortedRows.filter((row) => {
-        return this.stringifyRow(row)
-          .toLowerCase()
-          .includes(this.tableSearch.toLowerCase());
-      });
-    },
     columnWidthsStyle() {
       if (Array.isArray(this.columns)) {
         let columnsWidths = "grid-template-columns:";
@@ -377,8 +392,28 @@ export default {
         return "";
       }
     },
+    sortedFilteredRows() {
+      let rows = this.sortedRows;
+      if (this.tableSearch && this.enableTableSearching) {
+        rows = rows.filter((row) => {
+          return this.stringifyRow(row)
+            .toLowerCase()
+            .includes(this.tableSearch.toLowerCase());
+        });
+      }
+      return rows;
+    },
+    sortedFilteredPagedRows() {
+      if (this.enablePaging) {
+        return this.sortedFilteredRows.slice(this.startIndex, this.endIndex);
+      }
+      return this.sortedFilteredRows;
+    },
   },
   methods: {
+    updatePagedItems(pagedItems) {
+      this.sortedFilteredPagedRows = pagedItems;
+    },
     stringifyRow(row) {
       return this.columns
         .map((column) => row[column.property])

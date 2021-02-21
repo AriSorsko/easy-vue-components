@@ -1,3 +1,4 @@
+import "regenerator-runtime/runtime";
 import EasyTable from "@/components/EasyTable.vue";
 import { mount } from "@vue/test-utils";
 
@@ -363,40 +364,9 @@ describe("EasyTable.vue", () => {
     expect(check1.element.checked).toBeFalsy();
     check1.trigger("click").then(() => {
       expect(check1.element.checked).toBeTruthy();
-      expect(wrapper.emitted("update:selectedItems")[0][0].name).toBe(
+      expect(wrapper.emitted("update:selectedItems")[0][0][0].name).toBe(
         "Bobcats"
       );
-    });
-  });
-
-  it("The checkAll box toggles all of the items", () => {
-    const wrapper = mount(EasyTable, {
-      propsData: {
-        columns,
-        rows,
-        enableCheckBoxes: true,
-      },
-    });
-
-    const checkAll = wrapper.findComponent({ ref: "checkAll" });
-    const check0 = wrapper.findComponent({ ref: "check_0" });
-    const check1 = wrapper.findComponent({ ref: "check_1" });
-    const check2 = wrapper.findComponent({ ref: "check_1" });
-    expect(checkAll.element.checked).toBeFalsy();
-    expect(check0.element.checked).toBeFalsy();
-    expect(check1.element.checked).toBeFalsy();
-    expect(check2.element.checked).toBeFalsy();
-    checkAll.trigger("click").then(() => {
-      expect(checkAll.element.checked).toBeTruthy();
-      expect(check0.element.checked).toBeTruthy();
-      expect(check1.element.checked).toBeTruthy();
-      expect(check2.element.checked).toBeTruthy();
-      checkAll.trigger("click").then(() => {
-        expect(checkAll.element.checked).toBeFalsy();
-        expect(check0.element.checked).toBeFalsy();
-        expect(check1.element.checked).toBeFalsy();
-        expect(check2.element.checked).toBeFalsy();
-      });
     });
   });
 
@@ -428,7 +398,7 @@ describe("EasyTable.vue", () => {
 
   it("The table rows are filtered based on the table search term", () => {
     const wrapper = mount(EasyTable, {
-      propsData: { columns, rows, tableSearching: true },
+      propsData: { columns, rows, enableTableSearching: true },
     });
 
     const searchInput = wrapper.findComponent({ ref: "searchInput" });
@@ -440,4 +410,6 @@ describe("EasyTable.vue", () => {
       expect(firstFilteredCell.text()).toContain("Unicorns");
     });
   });
+
+  
 });
