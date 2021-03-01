@@ -1,24 +1,28 @@
 <template>
   <div>
     <EasyTable
-      :columns="columns"
-      :rows="teams"
+      id="teamsTable"
+      :enableTableSearching="true"
+      :groups="groups"
       :fixedHeader="true"
       :enableRadioButtons="true"
       :selectedItem.sync="selectedItem"
       :enableCheckBoxes="true"
       :selectedItems.sync="selectedItems"
-      id="teamsTable"
       enableAccordianforDetailRow="multi"
-      :enableTableSearching="true"
+      :columns="columns"
+      :rows="teams"
       :enablePaging="true"
-      :rowsPerPage="7"
+      :rowsPerPage="15"
     >
       <template v-slot:expandedDetailRowIcon>
         <font-awesome-icon icon="minus" />
       </template>
       <template v-slot:collapsedDetailRowIcon>
         <font-awesome-icon icon="plus" />
+      </template>
+      <template v-slot:groupHeader="group">
+        <span style="font-weight: bold">{{ group.header }}</span>
       </template>
 
       <template v-slot:edit="row">
@@ -83,6 +87,10 @@
 }
 #playersTable /deep/ .name {
   color: black;
+}
+
+#teamsTable /deep/ .groupHeader {
+  color: purple;
 }
 </style>
 
@@ -656,6 +664,30 @@ export default {
               assists: 147,
             },
           ],
+        },
+      ],
+      groups: [
+        {
+          header: "Teams with a winning season",
+          filter: (team) => {
+            return team.wins > team.losses;
+          },
+        },
+        {
+          header: "Teams with a tied season",
+          filter: (team) => {
+            return team.wins === team.losses;
+          },
+        },
+        {
+          header: "Teams with a losing season",
+          filter: (team) => {
+            return team.wins < team.losses;
+          },
+        },
+        {
+          header: "All Teams",
+          filter: () => true,
         },
       ],
     };

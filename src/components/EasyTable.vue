@@ -10,7 +10,6 @@
     />
 
     <div id="container" :style="columnWidthsStyle" ref="container">
-      <!-- Headings -->
       <!-- Empty div to keep the headers lined up with their columns when there are exapnd/collapse buttons  -->
       <div v-if="enableAccordianforDetailRow" />
       <!-- Empty div to keep the headers lined up with their columns when there are radio buttons  -->
@@ -24,6 +23,7 @@
         ref="checkAll"
         @click="checkAllToggled"
       />
+      <!-- Headings -->
       <div
         v-for="(column, index) in columns"
         :key="column.header"
@@ -47,83 +47,123 @@
           />
         </span>
       </div>
-      <!-- Data Rows -->
-      <div
-        v-if="!sortedFilteredPagedRows || sortedFilteredPagedRows.length === 0"
-        id="noDataMessage"
-      >
+
+      <!-- No table data -->
+      <div v-if="!rows || rows.length === 0" class="spanAllColumns">
         There is no data for this table.
       </div>
+      <!-- No table data that matches the search value-->
       <div
-        v-else
-        v-for="(row, rindex) in sortedFilteredPagedRows"
-        :key="rindex"
-        class="collapseDivs"
+        v-else-if="
+          !sortedFilteredAndGroupedRows ||
+            sortedFilteredAndGroupedRows.length === 0
+        "
+        class="spanAllColumns"
       >
-        <!-- Expand/Collapse controls for the details row -->
-        <div v-if="enableAccordianforDetailRow">
-          <div v-if="openDetailRows.includes(row)" @click="collapseRow(row)">
-            <slot name="expandedDetailRowIcon" v-bind="row">
-              <font-awesome-icon
-                icon="angle-down"
-                :ref="'angleDown_' + rindex"
-              />
-            </slot>
-          </div>
-          <div v-else @click="expandRow(row)">
-            <slot name="collapsedDetailRowIcon" v-bind="row">
-              <font-awesome-icon
-                icon="angle-right"
-                :ref="'angleRight_' + rindex"
-              />
-            </slot>
-          </div>
-        </div>
-        <input
-          v-if="enableRadioButtons"
-          type="radio"
-          :id="rindex"
-          :value="row"
-          v-model="internalSelectedItem"
-          :ref="'radio_' + rindex"
-        />
-        <input
-          v-if="enableCheckBoxes"
-          type="checkbox"
-          :id="rindex"
-          :value="row"
-          v-model="internalSelectedItems"
-          :ref="'check_' + rindex"
-        />
-        <div
-          v-for="(column, cindex) in columns"
-          :key="column.property + cindex"
-          :class="generateCellClasses(column, cindex, rindex)"
-          :ref="'rowCell_' + rindex + '_' + cindex"
-        >
-          <slot :name="column.property" v-bind="row">
-            {{ row[column.property] }}
-          </slot>
-        </div>
+        No rows match the search
+      </div>
 
+      <!-- Data Rows -->
+      <div v-else class="collapseDivs">
         <div
-          class="detailRowSlot"
-          :key="JSON.stringify(row)"
-          v-if="!enableAccordianforDetailRow || openDetailRows.includes(row)"
+          v-for="(group, gindex) in rowsToShow"
+          :key="gindex"
+          class="collapseDivs"
         >
-          <slot name="detailRowSlot" v-bind="row" />
+          <!-- Header row for groups -->
+          <div
+            class="spanAllColumns groupHeader"
+            v-if="group.header && group.rows.length > 0"
+          >
+            <slot name="groupHeader" v-bind="group">
+              {{ group.header }}
+            </slot>
+          </div>
+
+          <div
+            v-for="(row, rindex) in group.rows"
+            :key="rindex"
+            class="collapseDivs"
+          >
+            <!-- Expand/Collapse controls for the details row -->
+            <div v-if="enableAccordianforDetailRow">
+              <div
+                v-if="openDetailRows.includes(row)"
+                @click="collapseRow(row)"
+              >
+                <slot name="expandedDetailRowIcon" v-bind="row">
+                  <font-awesome-icon
+                    icon="angle-down"
+                    :ref="'angleDown_' + rindex"
+                  />
+                </slot>
+              </div>
+              <div v-else @click="expandRow(row)">
+                <slot name="collapsedDetailRowIcon" v-bind="row">
+                  <font-awesome-icon
+                    icon="angle-right"
+                    :ref="'angleRight_' + rindex"
+                  />
+                </slot>
+              </div>
+            </div>
+
+            <!-- Radio buttons -->
+            <input
+              v-if="enableRadioButtons"
+              type="radio"
+              :id="rindex"
+              :value="row"
+              v-model="internalSelectedItem"
+              :ref="'radio_' + rindex"
+            />
+
+            <!-- Check boxes -->
+            <input
+              v-if="enableCheckBoxes"
+              type="checkbox"
+              :id="rindex"
+              :value="row"
+              v-model="internalSelectedItems"
+              :ref="'check_' + rindex"
+            />
+
+            <!-- Columns for the row -->
+            <div
+              v-for="(column, cindex) in columns"
+              :key="column.property + cindex"
+              :class="generateCellClasses(column, cindex, rindex)"
+              :ref="'rowCell_' + gindex + '_' + rindex + '_' + cindex"
+            >
+              <slot :name="column.property" v-bind="row">
+                {{ row[column.property] }}
+              </slot>
+            </div>
+
+            <!-- Detail row -->
+            <div
+              class="detailRowSlot"
+              :key="JSON.stringify(row)"
+              v-if="
+                !enableAccordianforDetailRow || openDetailRows.includes(row)
+              "
+            >
+              <slot name="detailRowSlot" v-bind="row" />
+            </div>
+          </div>
         </div>
       </div>
     </div>
 
-    <div v-if="enablePaging" id="pagingControls" class="pagingControls">
-      <Pages
-        :numberOfitems="sortedFilteredRows.length"
-        :itemsPerPage="5"
-        :startIndex.sync="startIndex"
-        :endIndex.sync="endIndex"
-      />
-    </div>
+    <Pages
+      v-if="enablePaging"
+      id="pagingControls"
+      class="pagingControls"
+      :numberOfitems="sortedFilteredAndGroupedRows.length"
+      :itemsPerPage="rowsPerPage"
+      :startIndex.sync="startIndex"
+      :endIndex.sync="endIndex"
+    />
   </div>
 </template>
 
@@ -138,7 +178,8 @@
     <div>cell</div>
     <div>cell</div>
     <div>cell</div>
-    Which in this context means all of the rows line up!
+    Which in this context means nested divs still end up
+    in a single long list of divs as the css grid expects
 */
 .collapseDivs {
   display: contents;
@@ -148,7 +189,7 @@
   display: grid;
 }
 
-#noDataMessage {
+.spanAllColumns {
   grid-column: 1/-1;
 }
 
@@ -160,6 +201,10 @@
 
 .headerCell {
   font-weight: bold;
+}
+
+.groupHeader {
+  text-align: left;
 }
 
 .detailRowSlot {
@@ -230,6 +275,9 @@ export default {
       default: false,
     },
     rowsPerPage: Number,
+    groups: {
+      type: Array,
+    },
   },
   data() {
     return {
@@ -392,27 +440,73 @@ export default {
         return "";
       }
     },
-    sortedFilteredRows() {
-      let rows = this.sortedRows;
+    sortedFilteredAndGroupedRows() {
+      let sortedFilteredRows = this.sortedRows;
+
       if (this.tableSearch && this.enableTableSearching) {
-        rows = rows.filter((row) => {
+        sortedFilteredRows = sortedFilteredRows.filter((row) => {
           return this.stringifyRow(row)
             .toLowerCase()
             .includes(this.tableSearch.toLowerCase());
         });
       }
-      return rows;
+
+      // Handle edge case where if a row is in multiple groups
+      // it will be repeated, as expected, however the paging
+      // needs to account for that so it does not end up with
+      // more rows on a page than should be there. To do that
+      // duplicate the rows that are in multiple groups before
+      // slicing for the page rows.
+      // Also the page component needs to know the number
+      // of rows, including duplicates, but excluding filtered
+      // rows. Which is why this is its own computed property.
+      let groupedRows = [];
+      const groups = this.groups ? this.groups : [{ filter: () => true }];
+      groups.forEach((group) => {
+        const rowsForGroup = this.filterByGroup(sortedFilteredRows, group);
+        const rowsWithGroup = rowsForGroup.map((row) => {
+          return { group, row };
+        });
+        groupedRows = groupedRows.concat(rowsWithGroup);
+      });
+      return groupedRows;
     },
-    sortedFilteredPagedRows() {
+    rowsToShow() {
+      let groupedRows = this.sortedFilteredAndGroupedRows;
+      //handle paging
       if (this.enablePaging) {
-        return this.sortedFilteredRows.slice(this.startIndex, this.endIndex);
+        groupedRows = groupedRows.slice(this.startIndex, this.endIndex);
       }
-      return this.sortedFilteredRows;
+
+      // handle grouping part 2
+      // Turn the array of {group, row} objects into an array of {group, header, [rows]} objects
+      let displayRows = [];
+      groupedRows.forEach((gr) => {
+        if (
+          displayRows.length === 0 ||
+          displayRows[displayRows.length - 1].group !== gr.group
+        ) {
+          displayRows.push({
+            header: gr.group.header,
+            group: gr.group,
+            rows: [],
+          });
+        }
+        displayRows[displayRows.length - 1].rows.push(gr.row);
+      });
+
+      return displayRows;
     },
   },
   methods: {
-    updatePagedItems(pagedItems) {
-      this.sortedFilteredPagedRows = pagedItems;
+    filterByGroup(rows, group) {
+      if (!group.filter || typeof group.filter !== "function") {
+        console.error("Groups must have a filter field that is a function");
+        return [];
+      }
+      return rows.filter((r) => {
+        return group.filter(r);
+      });
     },
     stringifyRow(row) {
       return this.columns

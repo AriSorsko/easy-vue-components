@@ -39,6 +39,21 @@ const rows = [
     losses: 0,
   },
 ];
+const groups = [
+  {
+    header: "Kitties!!!",
+    filter: (team) =>
+      ["Panthers", "Tigers", "Lions", "Bobcats"].includes(team.name),
+  },
+  {
+    header: "Magical!!!",
+    filter: (team) => ["Dragons", "Unicorns", "Elves"].includes(team.name),
+  },
+  {
+    header: "All!!!",
+    filter: () => true,
+  },
+];
 
 describe("EasyTable.vue", () => {
   it("renders the column names", () => {
@@ -93,13 +108,13 @@ describe("EasyTable.vue", () => {
       propsData: { columns, rows },
     });
 
-    const firstCell = wrapper.findComponent({ ref: "rowCell_0_0" });
+    const firstCell = wrapper.findComponent({ ref: "rowCell_0_0_0" });
     expect(firstCell.text()).toContain("Panthers");
 
-    const secondCell = wrapper.findComponent({ ref: "rowCell_0_1" });
+    const secondCell = wrapper.findComponent({ ref: "rowCell_0_0_1" });
     expect(secondCell.text()).toContain("16");
 
-    const thirdCell = wrapper.findComponent({ ref: "rowCell_0_2" });
+    const thirdCell = wrapper.findComponent({ ref: "rowCell_0_0_2" });
     expect(thirdCell.text()).toContain("8");
   });
 
@@ -108,13 +123,13 @@ describe("EasyTable.vue", () => {
       propsData: { columns, rows },
     });
 
-    const firstCell = wrapper.findComponent({ ref: "rowCell_0_0" });
+    const firstCell = wrapper.findComponent({ ref: "rowCell_0_0_0" });
     expect(firstCell.text()).toContain("Panthers");
 
-    const secondCell = wrapper.findComponent({ ref: "rowCell_1_0" });
+    const secondCell = wrapper.findComponent({ ref: "rowCell_0_1_0" });
     expect(secondCell.text()).toContain("Bobcats");
 
-    const thirdCell = wrapper.findComponent({ ref: "rowCell_2_0" });
+    const thirdCell = wrapper.findComponent({ ref: "rowCell_0_2_0" });
     expect(thirdCell.text()).toContain("Unicorns");
   });
 
@@ -142,11 +157,11 @@ describe("EasyTable.vue", () => {
       propsData: { columns, rows },
     });
 
-    const firstCell = wrapper.findComponent({ ref: "rowCell_0_0" });
+    const firstCell = wrapper.findComponent({ ref: "rowCell_0_0_0" });
     expect(firstCell.classes()).toContain("evenColumn");
     expect(firstCell.classes()).toContain("evenRow");
 
-    const secondCell = wrapper.findComponent({ ref: "rowCell_1_0" });
+    const secondCell = wrapper.findComponent({ ref: "rowCell_0_1_0" });
     expect(secondCell.classes()).toContain("evenColumn");
     expect(secondCell.classes()).toContain("oddRow");
   });
@@ -161,10 +176,10 @@ describe("EasyTable.vue", () => {
     const secondHeaderCell = wrapper.findComponent({ ref: "headerCell_1" });
     expect(secondHeaderCell.classes()).toContain("oddColumn");
 
-    const firstCell = wrapper.findComponent({ ref: "rowCell_0_0" });
+    const firstCell = wrapper.findComponent({ ref: "rowCell_0_0_0" });
     expect(firstCell.classes()).toContain("evenColumn");
 
-    const secondCell = wrapper.findComponent({ ref: "rowCell_0_1" });
+    const secondCell = wrapper.findComponent({ ref: "rowCell_0_0_1" });
     expect(secondCell.classes()).toContain("oddColumn");
   });
 
@@ -172,19 +187,19 @@ describe("EasyTable.vue", () => {
     const wrapper = mount(EasyTable, {
       propsData: { columns, rows },
     });
-    const c00 = wrapper.findComponent({ ref: "rowCell_0_0" });
+    const c00 = wrapper.findComponent({ ref: "rowCell_0_0_0" });
     expect(c00.classes()).toContain("row");
     expect(c00.classes()).toContain("name");
 
-    const c01 = wrapper.findComponent({ ref: "rowCell_0_1" });
+    const c01 = wrapper.findComponent({ ref: "rowCell_0_0_1" });
     expect(c01.classes()).toContain("row");
     expect(c01.classes()).toContain("wins");
 
-    const c02 = wrapper.findComponent({ ref: "rowCell_0_2" });
+    const c02 = wrapper.findComponent({ ref: "rowCell_0_0_2" });
     expect(c02.classes()).toContain("row");
     expect(c02.classes()).toContain("losses");
 
-    const c10 = wrapper.findComponent({ ref: "rowCell_1_0" });
+    const c10 = wrapper.findComponent({ ref: "rowCell_0_1_0" });
     expect(c10.classes()).toContain("row");
     expect(c10.classes()).toContain("name");
   });
@@ -218,11 +233,11 @@ describe("EasyTable.vue", () => {
       propsData: { columns, rows },
     });
 
-    const c00 = wrapper.findComponent({ ref: "rowCell_0_0" });
+    const c00 = wrapper.findComponent({ ref: "rowCell_0_0_0" });
     expect(c00.text()).toBe("Bobcats");
-    const c10 = wrapper.findComponent({ ref: "rowCell_1_0" });
+    const c10 = wrapper.findComponent({ ref: "rowCell_0_1_0" });
     expect(c10.text()).toBe("Panthers");
-    const c20 = wrapper.findComponent({ ref: "rowCell_2_0" });
+    const c20 = wrapper.findComponent({ ref: "rowCell_0_2_0" });
     expect(c20.text()).toBe("Unicorns");
   });
 
@@ -272,11 +287,11 @@ describe("EasyTable.vue", () => {
 
     const ad1 = wrapper.findComponent({ ref: "arrowDown_1" });
     ad1.trigger("click").then(() => {
-      const c01 = wrapper.findComponent({ ref: "rowCell_0_1" });
+      const c01 = wrapper.findComponent({ ref: "rowCell_0_0_1" });
       expect(c01.text()).toBe("24");
-      const c11 = wrapper.findComponent({ ref: "rowCell_1_1" });
+      const c11 = wrapper.findComponent({ ref: "rowCell_0_1_1" });
       expect(c11.text()).toBe("16");
-      const c21 = wrapper.findComponent({ ref: "rowCell_2_1" });
+      const c21 = wrapper.findComponent({ ref: "rowCell_0_2_1" });
       expect(c21.text()).toBe("8");
 
       const au1 = wrapper.findComponent({ ref: "arrowUp_0" });
@@ -403,13 +418,113 @@ describe("EasyTable.vue", () => {
 
     const searchInput = wrapper.findComponent({ ref: "searchInput" });
     expect(searchInput).toBeTruthy();
-    const firstCell = wrapper.findComponent({ ref: "rowCell_0_0" });
+    const firstCell = wrapper.findComponent({ ref: "rowCell_0_0_0" });
     expect(firstCell.text()).toContain("Panthers");
     searchInput.setValue("0").then(() => {
-      const firstFilteredCell = wrapper.findComponent({ ref: "rowCell_0_0" });
+      const firstFilteredCell = wrapper.findComponent({ ref: "rowCell_0_0_0" });
       expect(firstFilteredCell.text()).toContain("Unicorns");
     });
   });
 
-  
+  it("No matching rows message shows up when the search value filters out all the rows", () => {
+    const wrapper = mount(EasyTable, {
+      propsData: { columns, rows, enableTableSearching: true },
+    });
+
+    const searchInput = wrapper.findComponent({ ref: "searchInput" });
+    expect(wrapper.text()).toContain("Panthers");
+    searchInput.setValue("abc123").then(() => {
+      expect(wrapper.text()).toContain("No rows match the search");
+      expect(wrapper.text()).not.toContain("Panthers");
+    });
+  });
+
+  it("rowsPerPage prop controls how many pages are displayed", async () => {
+    const wrapper = mount(EasyTable, {
+      propsData: { columns, rows, enablePaging: true, rowsPerPage: 2 },
+    });
+    // Wait for the pages to finish computing
+    await wrapper.findComponent({ ref: "rowCell_0_0_0" });
+
+    expect(wrapper.text()).toContain("Panthers");
+    expect(wrapper.text()).toContain("Bobcats");
+    expect(wrapper.text()).not.toContain("Unicorns");
+  });
+
+  it("rowsPerPage prop controls how many pages are displayed", async () => {
+    const wrapper = mount(EasyTable, {
+      propsData: { columns, rows, enablePaging: true, rowsPerPage: 2 },
+    });
+    // Wait for the pages to finish computing
+    await wrapper.findComponent({ ref: "rowCell_0_0_0" });
+
+    expect(wrapper.text()).toContain("Panthers");
+    expect(wrapper.text()).toContain("Bobcats");
+    expect(wrapper.text()).not.toContain("Unicorns");
+  });
+
+  it("Groups show headers and associated rows", () => {
+    const wrapper = mount(EasyTable, {
+      propsData: { columns, rows, groups },
+    });
+
+    expect(wrapper.text()).toContain("Panthers");
+    expect(wrapper.text()).toContain("Bobcats");
+    expect(wrapper.text()).toContain("Unicorns");
+    expect(wrapper.text()).toContain("Kitties!!!");
+    expect(wrapper.text()).toContain("Magical!!!");
+  });
+
+  it("Groups support having same row in multiple groups", () => {
+    const wrapper = mount(EasyTable, {
+      propsData: { columns, rows, groups },
+    });
+
+    expect(wrapper.text()).toContain("Kitties!!!");
+    expect(wrapper.text()).toContain("Magical!!!");
+    expect(wrapper.text()).toContain("All!!!");
+
+    const firstCell = wrapper.findComponent({ ref: "rowCell_0_0_0" });
+    expect(firstCell.text()).toContain("Panthers");
+
+    const secondCell = wrapper.findComponent({ ref: "rowCell_0_1_0" });
+    expect(secondCell.text()).toContain("Bobcats");
+
+    const thirdCell = wrapper.findComponent({ ref: "rowCell_1_0_0" });
+    expect(thirdCell.text()).toContain("Unicorns");
+
+    const fourthCell = wrapper.findComponent({ ref: "rowCell_2_0_0" });
+    expect(fourthCell.text()).toContain("Panthers");
+
+    const fithCell = wrapper.findComponent({ ref: "rowCell_2_1_0" });
+    expect(fithCell.text()).toContain("Bobcats");
+
+    const sixthCell = wrapper.findComponent({ ref: "rowCell_2_2_0" });
+    expect(sixthCell.text()).toContain("Unicorns");
+  });
+
+  it(`Having a row duplicated in several groups does not make the 
+  number or rows exceed the rowsPerPage value`, async () => {
+    const wrapper = mount(EasyTable, {
+      propsData: { columns, rows, groups, enablePaging: true, rowsPerPage: 2 },
+    });
+
+    // Wait for the pages to finish computing
+    await wrapper.findComponent({ ref: "rowCell_0_0_0" });
+
+    const firstCell = wrapper.findComponent({ ref: "rowCell_0_0_0" });
+    expect(firstCell.text()).toContain("Panthers");
+
+    const secondCell = wrapper.findComponent({ ref: "rowCell_0_1_0" });
+    expect(secondCell.text()).toContain("Bobcats");
+
+    expect(wrapper.text()).toContain("Kitties!!!");
+    expect(wrapper.text()).not.toContain("Magical!!!");
+    expect(wrapper.text()).not.toContain("All!!!");
+
+    expect(wrapper.findComponent({ ref: "rowCell_0_1_0" }).exists()).toBe(true);
+    expect(wrapper.findComponent({ ref: "rowCell_1_0_0" }).exists()).toBe(
+      false
+    );
+  });
 });

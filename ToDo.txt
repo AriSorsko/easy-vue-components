@@ -1,16 +1,15 @@
-Grouping 
-    Header rows on groups
-    Design so that a single row can be in multiple groups
-    Support filter function or array of matching items
 Error checking
     Required props
     When all cells in a column are empty, was the field in the row objects? Was a similar field in the row objects?
     passed slots that don't match
+    See if the prop warnings can utilize prop validator functions
+        https://vuejs.org/v2/guide/components-props.html#Type-Checks
 Header slots
 Cell decorator function 
     Test on numbers with some being high, others low etc.
 Column specific search functions
-    Demo with dates? and/or 
+    Demo with dates? and/or currencies?
+    Also allow dropdowns instead of search boxes?
 Export to CSV
 Column level filtering
 Update checkall box to include inderterminate state and data variable to calculated
@@ -18,9 +17,14 @@ Search term highlighting
 Convert the cell level row/column css class to grid-template rows/columns
 Decide on a license
 Decent default css
-Partial data sets (loading page 0-20 of 5000)
+Partial data sets (i.e. loading page 0-20 of 5000)
     Warning: search/sort/paging need to be handled by the parent in this case!
     Include loading indicator
+    https://vuejs.org/v2/guide/components-dynamic-async.html#Handling-Loading-State
+Documentation
+Refactor search/filter into another reusable component
+    Also add magnifying glass icon
+
 Themes?
-See if the prop warnings can utilize prop validator functions
-    https://vuejs.org/v2/guide/components-props.html#Type-Checks
+"fuzzy" search?
+Group filter that accepts an array?
