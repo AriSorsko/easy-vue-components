@@ -221,7 +221,7 @@ import camelCase from "lodash/camelCase";
 import sortBy from "lodash/sortBy";
 import cloneDeep from "lodash/cloneDeep";
 import reverse from "lodash/reverse";
-import Pages from "./Pages";
+import Pages from "@/components/Pages";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
   faArrowUp,
