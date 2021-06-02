@@ -1,6 +1,6 @@
 {
   "name": "easy-vue-table",
-  "version": "0.9.0",
+  "version": "0.9.4",
   "private": false,
   "main": "dist/EasyVueTable.umd.js",
   "module": "dist/EasyVueTable.esm.js",

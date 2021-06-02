@@ -1,5 +1,5 @@
 import "regenerator-runtime/runtime";
-import EasyVueTable from "@/components/EasyVueTable.vue";
+import EasyVueTable from "@/EasyVueTable.vue";
 import { mount } from "@vue/test-utils";
 
 const columns = [

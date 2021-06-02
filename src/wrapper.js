@@ -1,5 +1,5 @@
 // Import vue component
-import EasyVueTable from "./components/EasyVueTable.vue";
+import EasyVueTable from "./EasyVueTable.vue";
 
 // Declare install function executed by Vue.use()
 export function install(Vue) {

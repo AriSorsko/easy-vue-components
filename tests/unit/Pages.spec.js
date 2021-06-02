@@ -1,5 +1,5 @@
 import "regenerator-runtime/runtime";
-import Pages from "@/components/Pages.vue";
+import Pages from "@/Pages.vue";
 import { mount } from "@vue/test-utils";
 
 const items = [0, 1, 2, 3, 4, 5];
