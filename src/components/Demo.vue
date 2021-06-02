@@ -1,6 +1,6 @@
 <template>
   <div>
-    <EasyTable
+    <EasyVueTable
       id="teamsTable"
       :enableTableSearching="true"
       :groups="groups"
@@ -29,13 +29,13 @@
         <button>Edit {{ row.name }}</button>
       </template>
       <template v-slot:detailRowSlot="row">
-        <EasyTable
+        <EasyVueTable
           id="playersTable"
           :columns="playerColumns"
           :rows="row.players"
         />
       </template>
-    </EasyTable>
+    </EasyVueTable>
 
     <div>Selected Team: {{ selectedItem ? selectedItem.name : "none" }}</div>
     <div>Selected Teams: {{ selectedItems.map((i) => i.name).join(", ") }}</div>
@@ -95,7 +95,7 @@
 </style>
 
 <script>
-import EasyTable from "./EasyTable";
+import EasyVueTable from "./EasyVueTable";
 import { faPlus, faMinus } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { library } from "@fortawesome/fontawesome-svg-core";
@@ -106,7 +106,7 @@ library.add(faMinus);
 export default {
   name: "Demo",
   components: {
-    EasyTable,
+    EasyVueTable,
     FontAwesomeIcon,
   },
   data() {

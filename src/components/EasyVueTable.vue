@@ -237,7 +237,7 @@ library.add(faAngleDown);
 library.add(faAngleRight);
 
 export default {
-  name: "EasyTable",
+  name: "EasyVueTable",
   components: { FontAwesomeIcon, Pages },
   props: {
     columns: Array,

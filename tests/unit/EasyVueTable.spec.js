@@ -1,5 +1,5 @@
 import "regenerator-runtime/runtime";
-import EasyTable from "@/components/EasyTable.vue";
+import EasyVueTable from "@/components/EasyVueTable.vue";
 import { mount } from "@vue/test-utils";
 
 const columns = [
@@ -55,9 +55,9 @@ const groups = [
   },
 ];
 
-describe("EasyTable.vue", () => {
+describe("EasyVueTable.vue", () => {
   it("renders the column names", () => {
-    const wrapper = mount(EasyTable, {
+    const wrapper = mount(EasyVueTable, {
       propsData: { columns, rows },
     });
     expect(wrapper.text()).toContain("Team");
@@ -73,7 +73,7 @@ describe("EasyTable.vue", () => {
         width: "150px",
       },
     ];
-    const wrapper = mount(EasyTable, {
+    const wrapper = mount(EasyVueTable, {
       propsData: { columns, rows: [] },
     });
 
@@ -86,7 +86,7 @@ describe("EasyTable.vue", () => {
 
   it("Fixed header class is included when fixedHeader prop is true", () => {
     const fixedHeader = true;
-    const wrapper = mount(EasyTable, {
+    const wrapper = mount(EasyVueTable, {
       propsData: { columns, rows, fixedHeader },
     });
 
@@ -95,7 +95,7 @@ describe("EasyTable.vue", () => {
   });
 
   it("Fixed header class is not included when fixedHeader prop is ommitted", () => {
-    const wrapper = mount(EasyTable, {
+    const wrapper = mount(EasyVueTable, {
       propsData: { columns, rows },
     });
 
@@ -104,7 +104,7 @@ describe("EasyTable.vue", () => {
   });
 
   it("All columns are rendered", () => {
-    const wrapper = mount(EasyTable, {
+    const wrapper = mount(EasyVueTable, {
       propsData: { columns, rows },
     });
 
@@ -119,7 +119,7 @@ describe("EasyTable.vue", () => {
   });
 
   it("All rows are rendered", () => {
-    const wrapper = mount(EasyTable, {
+    const wrapper = mount(EasyVueTable, {
       propsData: { columns, rows },
     });
 
@@ -134,7 +134,7 @@ describe("EasyTable.vue", () => {
   });
 
   it("Column widths are included in the container style", () => {
-    const wrapper = mount(EasyTable, {
+    const wrapper = mount(EasyVueTable, {
       propsData: { columns, rows },
     });
 
@@ -145,7 +145,7 @@ describe("EasyTable.vue", () => {
   });
 
   it("Empty table message is rendered when there are no rows", () => {
-    const wrapper = mount(EasyTable, {
+    const wrapper = mount(EasyVueTable, {
       propsData: { columns, rows: [] },
     });
 
@@ -153,7 +153,7 @@ describe("EasyTable.vue", () => {
   });
 
   it("Row cells include the row classes", () => {
-    const wrapper = mount(EasyTable, {
+    const wrapper = mount(EasyVueTable, {
       propsData: { columns, rows },
     });
 
@@ -167,7 +167,7 @@ describe("EasyTable.vue", () => {
   });
 
   it("Column cells include the column classes", () => {
-    const wrapper = mount(EasyTable, {
+    const wrapper = mount(EasyVueTable, {
       propsData: { columns, rows },
     });
     const firstHeaderCell = wrapper.findComponent({ ref: "headerCell_0" });
@@ -184,7 +184,7 @@ describe("EasyTable.vue", () => {
   });
 
   it("Cells include general cells classes", () => {
-    const wrapper = mount(EasyTable, {
+    const wrapper = mount(EasyVueTable, {
       propsData: { columns, rows },
     });
     const c00 = wrapper.findComponent({ ref: "rowCell_0_0_0" });
@@ -205,7 +205,7 @@ describe("EasyTable.vue", () => {
   });
 
   it("Default cell content is replacable with slots", () => {
-    const wrapper = mount(EasyTable, {
+    const wrapper = mount(EasyVueTable, {
       propsData: { columns, rows },
       scopedSlots: {
         edit: '<p slot-scope="edit">Slot Test</p>',
@@ -229,7 +229,7 @@ describe("EasyTable.vue", () => {
       },
     ];
 
-    const wrapper = mount(EasyTable, {
+    const wrapper = mount(EasyVueTable, {
       propsData: { columns, rows },
     });
 
@@ -256,7 +256,7 @@ describe("EasyTable.vue", () => {
       },
     ];
 
-    const wrapper = mount(EasyTable, {
+    const wrapper = mount(EasyVueTable, {
       propsData: { columns, rows },
     });
 
@@ -281,7 +281,7 @@ describe("EasyTable.vue", () => {
       },
     ];
 
-    const wrapper = mount(EasyTable, {
+    const wrapper = mount(EasyVueTable, {
       propsData: { columns, rows },
     });
 
@@ -300,7 +300,7 @@ describe("EasyTable.vue", () => {
   });
 
   it("enableRadioButtons prop adds a radio button column", () => {
-    const wrapper = mount(EasyTable, {
+    const wrapper = mount(EasyVueTable, {
       propsData: { columns, rows, enableRadioButtons: true },
     });
 
@@ -309,7 +309,7 @@ describe("EasyTable.vue", () => {
   });
 
   it("selectedItem prop toggles the radio button for that row", () => {
-    const wrapper = mount(EasyTable, {
+    const wrapper = mount(EasyVueTable, {
       propsData: {
         columns,
         rows,
@@ -323,7 +323,7 @@ describe("EasyTable.vue", () => {
   });
 
   it("Selecting a radio button emits an update for the selectedItem", () => {
-    const wrapper = mount(EasyTable, {
+    const wrapper = mount(EasyVueTable, {
       propsData: {
         columns,
         rows,
@@ -340,7 +340,7 @@ describe("EasyTable.vue", () => {
   });
 
   it("enableCheckBoxes prop adds a checkboxes column", () => {
-    const wrapper = mount(EasyTable, {
+    const wrapper = mount(EasyVueTable, {
       propsData: { columns, rows, enableCheckBoxes: true },
     });
 
@@ -349,7 +349,7 @@ describe("EasyTable.vue", () => {
   });
 
   it("selectedItems prop toggles the check boxes for those rows", () => {
-    const wrapper = mount(EasyTable, {
+    const wrapper = mount(EasyVueTable, {
       propsData: {
         columns,
         rows,
@@ -367,7 +367,7 @@ describe("EasyTable.vue", () => {
   });
 
   it("Selecting a check box emits an update for the selectedItems", () => {
-    const wrapper = mount(EasyTable, {
+    const wrapper = mount(EasyVueTable, {
       propsData: {
         columns,
         rows,
@@ -386,7 +386,7 @@ describe("EasyTable.vue", () => {
   });
 
   it("Detail row cell content is replacable with slots", () => {
-    const wrapper = mount(EasyTable, {
+    const wrapper = mount(EasyVueTable, {
       propsData: { columns, rows },
       scopedSlots: {
         edit: `
@@ -399,7 +399,7 @@ describe("EasyTable.vue", () => {
   });
 
   it("enableAccordianforDetailRow prop shows the expand/collapse icons and thos icons work", () => {
-    const wrapper = mount(EasyTable, {
+    const wrapper = mount(EasyVueTable, {
       propsData: { columns, rows, enableAccordianforDetailRow: "single" },
     });
 
@@ -412,7 +412,7 @@ describe("EasyTable.vue", () => {
   });
 
   it("The table rows are filtered based on the table search term", () => {
-    const wrapper = mount(EasyTable, {
+    const wrapper = mount(EasyVueTable, {
       propsData: { columns, rows, enableTableSearching: true },
     });
 
@@ -427,7 +427,7 @@ describe("EasyTable.vue", () => {
   });
 
   it("No matching rows message shows up when the search value filters out all the rows", () => {
-    const wrapper = mount(EasyTable, {
+    const wrapper = mount(EasyVueTable, {
       propsData: { columns, rows, enableTableSearching: true },
     });
 
@@ -440,7 +440,7 @@ describe("EasyTable.vue", () => {
   });
 
   it("rowsPerPage prop controls how many pages are displayed", async () => {
-    const wrapper = mount(EasyTable, {
+    const wrapper = mount(EasyVueTable, {
       propsData: { columns, rows, enablePaging: true, rowsPerPage: 2 },
     });
     // Wait for the pages to finish computing
@@ -452,7 +452,7 @@ describe("EasyTable.vue", () => {
   });
 
   it("rowsPerPage prop controls how many pages are displayed", async () => {
-    const wrapper = mount(EasyTable, {
+    const wrapper = mount(EasyVueTable, {
       propsData: { columns, rows, enablePaging: true, rowsPerPage: 2 },
     });
     // Wait for the pages to finish computing
@@ -464,7 +464,7 @@ describe("EasyTable.vue", () => {
   });
 
   it("Groups show headers and associated rows", () => {
-    const wrapper = mount(EasyTable, {
+    const wrapper = mount(EasyVueTable, {
       propsData: { columns, rows, groups },
     });
 
@@ -476,7 +476,7 @@ describe("EasyTable.vue", () => {
   });
 
   it("Groups support having same row in multiple groups", () => {
-    const wrapper = mount(EasyTable, {
+    const wrapper = mount(EasyVueTable, {
       propsData: { columns, rows, groups },
     });
 
@@ -505,7 +505,7 @@ describe("EasyTable.vue", () => {
 
   it(`Having a row duplicated in several groups does not make the 
   number or rows exceed the rowsPerPage value`, async () => {
-    const wrapper = mount(EasyTable, {
+    const wrapper = mount(EasyVueTable, {
       propsData: { columns, rows, groups, enablePaging: true, rowsPerPage: 2 },
     });
 
