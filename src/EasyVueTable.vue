@@ -18,10 +18,9 @@
       <input
         v-if="enableCheckBoxes"
         type="checkbox"
-        v-model="checkAll"
-        value="checkAll"
+        v-model="allChecked"
         ref="checkAll"
-        @click="checkAllToggled"
+        :indeterminate.prop="someChecked"
       />
       <!-- Headings -->
       <div
@@ -286,7 +285,6 @@ export default {
       internalSelectedItem: null,
       internalSelectedItems: [],
       openDetailRows: [],
-      checkAll: true,
       tableSearch: "",
       startIndex: 0,
       endIndex: 0,
@@ -397,7 +395,6 @@ export default {
       this.internalSelectedItems = this.internalSelectedItems.concat(
         filteredSelected
       );
-      this.checkAll = this.internalSelectedItems.length === this.rows.length;
       if (selectedItemsNotInRows.length !== 0)
         console.warn(
           "The following selected items are not one of the row items!",
@@ -411,7 +408,6 @@ export default {
     },
     internalSelectedItems() {
       this.$emit("update:selectedItems", this.internalSelectedItems);
-      this.checkAll = this.internalSelectedItems.length === this.rows.length;
     },
   },
   computed: {
@@ -497,6 +493,25 @@ export default {
 
       return displayRows;
     },
+    allChecked: {
+      get() {
+        return this.internalSelectedItems.length === this.rows.length;
+      },
+      set(checked) {
+        this.internalSelectedItems = [];
+        if (checked) {
+          this.internalSelectedItems = this.internalSelectedItems.concat(
+            this.rows
+          );
+        }
+      },
+    },
+    someChecked() {
+      return (
+        this.internalSelectedItems.length > 0 &&
+        this.internalSelectedItems.length < this.rows.length
+      );
+    },
   },
   methods: {
     filterByGroup(rows, group) {
@@ -517,14 +532,6 @@ export default {
           }
           return accumulator;
         });
-    },
-    checkAllToggled() {
-      this.internalSelectedItems = [];
-      if (!this.checkAll) {
-        this.internalSelectedItems = this.internalSelectedItems.concat(
-          this.rows
-        );
-      }
     },
     collapseRow(row) {
       this.openDetailRows = this.openDetailRows.filter((r) => r !== row);
