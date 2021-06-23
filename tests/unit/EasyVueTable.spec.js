@@ -385,6 +385,126 @@ describe("EasyVueTable.vue", () => {
     });
   });
 
+  it("Header checkbox is checked when all rows are selected", () => {
+    const wrapper = mount(EasyVueTable, {
+      propsData: {
+        columns,
+        rows,
+        enableCheckBoxes: true,
+        selectedItems: [rows[0], rows[1], rows[2]],
+      },
+    });
+
+    const checkAll = wrapper.findComponent({ ref: "checkAll" });
+    expect(checkAll.element.checked).toBeTruthy();
+    expect(checkAll.element.indeterminate).toBeFalsy();
+  });
+
+  it("Header checkbox is not checked when no rows are selected", () => {
+    const wrapper = mount(EasyVueTable, {
+      propsData: {
+        columns,
+        rows,
+        enableCheckBoxes: true,
+        selectedItems: [],
+      },
+    });
+
+    const checkAll = wrapper.findComponent({ ref: "checkAll" });
+    expect(checkAll.element.checked).toBeFalsy();
+    expect(checkAll.element.indeterminate).toBeFalsy();
+  });
+
+  it("Header checkbox is indeterminate when some rows are selected", () => {
+    const wrapper = mount(EasyVueTable, {
+      propsData: {
+        columns,
+        rows,
+        enableCheckBoxes: true,
+        selectedItems: [rows[0]],
+      },
+    });
+
+    const checkAll = wrapper.findComponent({ ref: "checkAll" });
+    expect(checkAll.element.checked).toBeFalsy();
+    expect(checkAll.element.indeterminate).toBeTruthy();
+  });
+
+  it("Clicking header checkbox when no rows are selected selects all rows", () => {
+    const wrapper = mount(EasyVueTable, {
+      propsData: {
+        columns,
+        rows,
+        enableCheckBoxes: true,
+        selectedItems: [],
+      },
+    });
+
+    const checkAll = wrapper.findComponent({ ref: "checkAll" });
+    expect(checkAll.element.checked).toBeFalsy();
+    expect(checkAll.element.indeterminate).toBeFalsy();
+    checkAll.trigger("click").then(() => {
+      expect(checkAll.element.checked).toBeTruthy();
+      expect(checkAll.element.indeterminate).toBeFalsy();
+      const check0 = wrapper.findComponent({ ref: "check_0" });
+      expect(check0.element.checked).toBeTruthy();
+      const check1 = wrapper.findComponent({ ref: "check_1" });
+      expect(check1.element.checked).toBeTruthy();
+      const check2 = wrapper.findComponent({ ref: "check_2" });
+      expect(check2.element.checked).toBeTruthy();
+    });
+  });
+
+  it("Clicking header checkbox when some rows are selected selects all rows", () => {
+    const wrapper = mount(EasyVueTable, {
+      propsData: {
+        columns,
+        rows,
+        enableCheckBoxes: true,
+        selectedItems: [rows[0]],
+      },
+    });
+
+    const checkAll = wrapper.findComponent({ ref: "checkAll" });
+    expect(checkAll.element.checked).toBeFalsy();
+    expect(checkAll.element.indeterminate).toBeTruthy();
+    checkAll.trigger("click").then(() => {
+      expect(checkAll.element.checked).toBeTruthy();
+      expect(checkAll.element.indeterminate).toBeFalsy();
+      const check0 = wrapper.findComponent({ ref: "check_0" });
+      expect(check0.element.checked).toBeTruthy();
+      const check1 = wrapper.findComponent({ ref: "check_1" });
+      expect(check1.element.checked).toBeTruthy();
+      const check2 = wrapper.findComponent({ ref: "check_2" });
+      expect(check2.element.checked).toBeTruthy();
+    });
+  });
+
+  it("Clicking header checkbox when all rows are selected deselects all rows", () => {
+    const wrapper = mount(EasyVueTable, {
+      propsData: {
+        columns,
+        rows,
+        enableCheckBoxes: true,
+        selectedItems: [rows[0], rows[1], rows[2]],
+      },
+    });
+
+    const checkAll = wrapper.findComponent({ ref: "checkAll" });
+    expect(checkAll.element.checked).toBeTruthy();
+    expect(checkAll.element.indeterminate).toBeFalsy();
+    checkAll.trigger("click").then(() => {
+      expect(checkAll.element.checked).toBeFalsy();
+      expect(checkAll.element.indeterminate).toBeFalsy();
+      const check0 = wrapper.findComponent({ ref: "check_0" });
+      expect(check0.element.checked).toBeFalsy();
+      const check1 = wrapper.findComponent({ ref: "check_1" });
+      expect(check1.element.checked).toBeFalsy();
+      const check2 = wrapper.findComponent({ ref: "check_2" });
+      expect(check2.element.checked).toBeFalsy();
+    });
+  });
+
   it("Detail row cell content is replacable with slots", () => {
     const wrapper = mount(EasyVueTable, {
       propsData: { columns, rows },
