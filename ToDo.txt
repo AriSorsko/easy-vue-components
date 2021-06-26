@@ -5,17 +5,17 @@ Error checking
     See if the prop warnings can utilize prop validator functions
         https://vuejs.org/v2/guide/components-props.html#Type-Checks
 Header slots
-
+Export search/paging components
 Refactor search/filter into another reusable component
     Also add magnifying glass icon
     Search term highlighting
+    Way to work with detailRows??? Can't search in the DOM since that will only be there when that row is expdanded
 Column specific search functions
     Demo with dates? and/or currencies?
     Also allow dropdowns instead of search boxes?
 
 Export to CSV
 Column level filtering
-Update checkall box to include inderterminate state and data variable to calculated
 
 Convert the cell level row/column css class to grid-template rows/columns
 Decent default css
@@ -24,6 +24,7 @@ Partial data sets (i.e. loading page 0-20 of 5000)
     Include loading indicator
     https://vuejs.org/v2/guide/components-dynamic-async.html#Handling-Loading-State
 Documentation
+test all forms of installation (vue.use() and with script)
 
 Themes?
 "fuzzy" search?

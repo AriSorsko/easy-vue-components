@@ -122,13 +122,21 @@ export default {
         {
           header: "Wins",
           property: "wins",
-          width: "170px",
           sortable: true,
         },
         {
           header: "Losses",
           property: "losses",
-          width: "180px",
+        },
+        {
+          header: "Championships",
+          property: "details.championships",
+          defaultValue: "-",
+        },
+        {
+          header: "School",
+          property: "details.school",
+          sortable: true,
         },
         {
           header: "Edit",
@@ -184,6 +192,11 @@ export default {
               assists: 147,
             },
           ],
+          details: {
+            school: "Wichita High",
+            championships: 2,
+            yearsPlayed: 22,
+          },
         },
         {
           name: "Bobcats",
@@ -216,6 +229,11 @@ export default {
               assists: 147,
             },
           ],
+          details: {
+            school: "Tulsa High",
+            championships: 2,
+            yearsPlayed: 22,
+          },
         },
         {
           name: "Unicorns",
@@ -248,6 +266,10 @@ export default {
               assists: 147,
             },
           ],
+          details: {
+            school: "Dallas High",
+            yearsPlayed: 22,
+          },
         },
         {
           name: "Slugs",
@@ -280,6 +302,11 @@ export default {
               assists: 147,
             },
           ],
+          details: {
+            school: "Atlanta Arts High",
+            championships: 1,
+            yearsPlayed: 18,
+          },
         },
         {
           name: "Lions",
@@ -312,6 +339,10 @@ export default {
               assists: 147,
             },
           ],
+          details: {
+            school: "NYC High",
+            yearsPlayed: 2,
+          },
         },
         {
           name: "Whales",
@@ -344,6 +375,10 @@ export default {
               assists: 147,
             },
           ],
+          details: {
+            school: "Seattle High",
+            yearsPlayed: 28,
+          },
         },
         {
           name: "Bulldogs",
@@ -376,6 +411,11 @@ export default {
               assists: 147,
             },
           ],
+          details: {
+            school: "San Francisco High",
+            championships: 5,
+            yearsPlayed: 18,
+          },
         },
         {
           name: "Dolphins",
@@ -408,6 +448,11 @@ export default {
               assists: 147,
             },
           ],
+          details: {
+            school: "Los Angeles High",
+            championships: 5,
+            yearsPlayed: 29,
+          },
         },
         {
           name: "Eagles",
@@ -440,6 +485,10 @@ export default {
               assists: 147,
             },
           ],
+          details: {
+            school: "Denver High",
+            yearsPlayed: 3,
+          },
         },
         {
           name: "Sharks",
@@ -472,6 +521,11 @@ export default {
               assists: 147,
             },
           ],
+          details: {
+            school: "Charlotte High",
+            championships: 1,
+            yearsPlayed: 13,
+          },
         },
         {
           name: "Dragons",
@@ -504,6 +558,11 @@ export default {
               assists: 147,
             },
           ],
+          details: {
+            school: "Houston High",
+            championships: 1,
+            yearsPlayed: 17,
+          },
         },
         {
           name: "Snails",
@@ -536,6 +595,11 @@ export default {
               assists: 147,
             },
           ],
+          details: {
+            school: "Miami High",
+            championships: 2,
+            yearsPlayed: 20,
+          },
         },
         {
           name: "Hornets",
@@ -568,6 +632,10 @@ export default {
               assists: 147,
             },
           ],
+          details: {
+            school: "Birmingham High",
+            yearsPlayed: 4,
+          },
         },
         {
           name: "Tigers",
@@ -600,6 +668,11 @@ export default {
               assists: 147,
             },
           ],
+          details: {
+            school: "DC High",
+            championships: 3,
+            yearsPlayed: 27,
+          },
         },
         {
           name: "Cheetahs",
@@ -632,6 +705,11 @@ export default {
               assists: 147,
             },
           ],
+          details: {
+            school: "Boston High",
+            championships: 2,
+            yearsPlayed: 24,
+          },
         },
         {
           name: "Elephants",

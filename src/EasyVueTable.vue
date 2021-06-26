@@ -135,7 +135,7 @@
               :ref="'rowCell_' + gindex + '_' + rindex + '_' + cindex"
             >
               <slot :name="column.property" v-bind="row">
-                {{ row[column.property] }}
+                {{ getCellValue(row, column) }}
               </slot>
             </div>
 
@@ -224,6 +224,7 @@ import camelCase from "lodash/camelCase";
 import sortBy from "lodash/sortBy";
 import cloneDeep from "lodash/cloneDeep";
 import reverse from "lodash/reverse";
+import get from "lodash/get";
 import Pages from "./Pages.vue";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
@@ -518,6 +519,9 @@ export default {
     },
   },
   methods: {
+    getCellValue(row, column) {
+      return get(row, column.property, column.defaultValue);
+    },
     filterByGroup(rows, group) {
       if (!group.filter || typeof group.filter !== "function") {
         console.error("Groups must have a filter field that is a function");
@@ -529,7 +533,7 @@ export default {
     },
     stringifyRow(row) {
       return this.columns
-        .map((column) => row[column.property])
+        .map((column) => this.getCellValue(row, column))
         .reduce((accumulator, curVal) => {
           if (curVal !== undefined) {
             accumulator += " " + curVal;
@@ -553,8 +557,8 @@ export default {
       } else this.columnSortDirection[columnProperty] = "asc";
     },
     generateHeaderClasses(header, index) {
-      let classes = header;
-      classes += " cellPadding";
+      let classes = camelCase(header);
+      classes += " cellPadding ";
       classes += " " + camelCase("header " + header);
       classes += index % 2 === 0 ? " evenColumn" : " oddColumn";
       if (this.fixedHeader) classes += " fixedHeader";
@@ -562,8 +566,8 @@ export default {
     },
     generateCellClasses(column, cindex, rindex) {
       let classes = "row ";
-      classes += " cellPadding";
-      classes += column.property;
+      classes += " cellPadding ";
+      classes += camelCase(column.property);
       classes += cindex % 2 === 0 ? " evenColumn" : " oddColumn";
       classes += rindex % 2 === 0 ? " evenRow" : " oddRow";
       return classes;

@@ -27,11 +27,17 @@ const rows = [
     name: "Panthers",
     wins: 16,
     losses: 8,
+    details: {
+      city: "Charlotte",
+    },
   },
   {
     name: "Bobcats",
     wins: 8,
     losses: 16,
+    details: {
+      city: "San Francisco",
+    },
   },
   {
     name: "Unicorns",
@@ -646,5 +652,46 @@ describe("EasyVueTable.vue", () => {
     expect(wrapper.findComponent({ ref: "rowCell_1_0_0" }).exists()).toBe(
       false
     );
+  });
+
+  it(`Nested properties display properly`, async () => {
+    const columnsWithNestedData = [
+      {
+        header: "City",
+        property: "details.city",
+        defaultValue: "-",
+      },
+    ];
+
+    const wrapper = mount(EasyVueTable, {
+      propsData: { columns: columnsWithNestedData, rows },
+    });
+
+    const firstCell = wrapper.findComponent({ ref: "rowCell_0_0_0" });
+    expect(firstCell.text()).toBe("Charlotte");
+
+    const secondCell = wrapper.findComponent({ ref: "rowCell_0_1_0" });
+    expect(secondCell.text()).toBe("San Francisco");
+
+    // when there is no value, the defaultValue should display instead
+    const thirdCell = wrapper.findComponent({ ref: "rowCell_0_2_0" });
+    expect(thirdCell.text()).toBe("-");
+  });
+
+  it(`Nested properties display properly when there is no value or default value`, async () => {
+    const columnsWithNestedData = [
+      {
+        header: "City",
+        property: "details.city",
+      },
+    ];
+
+    const wrapper = mount(EasyVueTable, {
+      propsData: { columns: columnsWithNestedData, rows },
+    });
+
+    // when there is no value, the defaultValue should display instead
+    const thirdCell = wrapper.findComponent({ ref: "rowCell_0_2_0" });
+    expect(thirdCell.text()).toBe("");
   });
 });
