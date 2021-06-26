@@ -213,6 +213,10 @@
 .searchInput {
   display: block;
 }
+.cellPadding {
+  padding-left: 2px;
+  padding-right: 2px;
+}
 </style>
 
 <script>
@@ -550,6 +554,7 @@ export default {
     },
     generateHeaderClasses(header, index) {
       let classes = header;
+      classes += " cellPadding";
       classes += " " + camelCase("header " + header);
       classes += index % 2 === 0 ? " evenColumn" : " oddColumn";
       if (this.fixedHeader) classes += " fixedHeader";
@@ -557,6 +562,7 @@ export default {
     },
     generateCellClasses(column, cindex, rindex) {
       let classes = "row ";
+      classes += " cellPadding";
       classes += column.property;
       classes += cindex % 2 === 0 ? " evenColumn" : " oddColumn";
       classes += rindex % 2 === 0 ? " evenRow" : " oddRow";

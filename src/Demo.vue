@@ -120,13 +120,13 @@ export default {
           initialSort: true,
         },
         {
-          header: "Number of Wins",
+          header: "Wins",
           property: "wins",
           width: "170px",
           sortable: true,
         },
         {
-          header: "Number of Losses",
+          header: "Losses",
           property: "losses",
           width: "180px",
         },
