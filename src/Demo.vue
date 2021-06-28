@@ -5,14 +5,11 @@
       :enableTableSearching="true"
       :groups="groups"
       :fixedHeader="true"
-      :enableRadioButtons="true"
       :selectedItem.sync="selectedItem"
-      :enableCheckBoxes="true"
       :selectedItems.sync="selectedItems"
       enableAccordianforDetailRow="multi"
       :columns="columns"
       :rows="teams"
-      :enablePaging="true"
       :rowsPerPage="15"
     >
       <template v-slot:expandedDetailRowIcon>
@@ -139,7 +136,7 @@ export default {
           sortable: true,
         },
         {
-          header: "Edit",
+          // header: "Edit",
           property: "edit",
         },
       ],
@@ -772,6 +769,7 @@ export default {
   },
   created() {
     this.selectedItem = this.teams[0];
+    // this.selectedItem = { a: "foo", b: "bar" };
     this.selectedItems.push(this.teams[0]);
     this.selectedItems.push(this.teams[1]);
     this.selectedItems.push(this.teams[2]);

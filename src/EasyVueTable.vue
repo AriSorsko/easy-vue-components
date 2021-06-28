@@ -220,11 +220,16 @@
 </style>
 
 <script>
-import camelCase from "lodash/camelCase";
-import sortBy from "lodash/sortBy";
-import cloneDeep from "lodash/cloneDeep";
-import reverse from "lodash/reverse";
-import get from "lodash/get";
+import {
+  camelCase,
+  cloneDeep,
+  difference,
+  get,
+  intersection,
+  isEmpty,
+  reverse,
+  sortBy,
+} from "lodash";
 import Pages from "./Pages.vue";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
@@ -244,13 +249,9 @@ export default {
   name: "EasyVueTable",
   components: { FontAwesomeIcon, Pages },
   props: {
-    columns: Array,
-    rows: Array,
+    columns: { type: Array, required: true },
+    rows: { type: Array, required: true },
     fixedHeader: {
-      type: Boolean,
-      default: false,
-    },
-    enableRadioButtons: {
       type: Boolean,
       default: false,
     },
@@ -258,30 +259,20 @@ export default {
       type: Object,
       default: null,
     },
-    enableCheckBoxes: {
-      type: Boolean,
-      default: false,
-    },
     selectedItems: {
       type: Array,
       default: null,
     },
     enableAccordianforDetailRow: {
-      type: String, // Can be single or multi
+      type: String, // only valid values are 'single' or 'multi'
       default: null,
     },
     enableTableSearching: {
       type: Boolean,
       default: false,
     },
-    enablePaging: {
-      type: Boolean,
-      default: false,
-    },
     rowsPerPage: Number,
-    groups: {
-      type: Array,
-    },
+    groups: Array,
   },
   data() {
     return {
@@ -297,57 +288,11 @@ export default {
   },
   created() {
     // Error checking
-    if (!this.columns) {
-      console.error("columns is a required prop to easy table");
-      return;
-    }
-    if (!Array.isArray(this.columns)) {
-      console.error(
-        "'columns' prop must be an array, not",
-        typeof this.columns
-      );
-      return;
-    }
-    if (this.columns.length === 0) {
-      console.warn("'columns' array is empty, no table data will be displayed");
-      return;
-    }
-    if (this.columns.find((c) => !c.property)) {
-      console.error("'property' is a required field on all columns");
-      return;
-    }
-    if (this.columns.find((c) => typeof c.property !== "string")) {
-      console.error("The 'property' field on all columns must be a string");
-      return;
-    }
-    if (!this.enableRadioButtons && this.selectedItem) {
-      console.warn(
-        "The 'selectedItem' prop is only used when radio buttons are enabled"
-      );
-    }
-    if (!this.enableCheckBoxes && this.selectedItems) {
-      console.warn(
-        "The 'selectedItems' prop is only used when check boxes are enabled"
-      );
-    }
-    if (this.rowsPerPage && !this.enablePaging) {
-      console.warn(
-        "The 'rowsPerPage' prop is only used when the 'enablePaging' prop is enabled"
-      );
-    }
+    let validProps = this.errorPropValidations();
+    if (!validProps) return;
+    this.warningPropValidations();
 
     if (!this.rows) return;
-
-    if (
-      this.enableAccordianforDetailRow &&
-      this.enableAccordianforDetailRow !== "single" &&
-      this.enableAccordianforDetailRow !== "multi"
-    ) {
-      console.warn(
-        "The 'enableAccordianforDetailRow' prop should be 'single' or 'multi', not ",
-        this.enableAccordianforDetailRow
-      );
-    }
 
     // Handle sorting setup
     const initialSortColumns = this.columns.filter((c) => c.initialSort);
@@ -381,30 +326,15 @@ export default {
     if (this.selectedItem) {
       if (this.rows.includes(this.selectedItem))
         this.internalSelectedItem = this.selectedItem;
-      else
-        console.warn(
-          "The selected item is not one of the row items!",
-          this.selectedItem
-        );
     }
 
     // Handle checkboxes setup
     if (this.selectedItems) {
-      const selectedItemsNotInRows = this.selectedItems.filter(
-        (i) => !this.rows.includes(i)
-      );
+      const filteredSelected = intersection(this.selectedItems, this.rows);
 
-      const filteredSelected = this.selectedItems.filter(
-        (i) => !selectedItemsNotInRows.includes(i)
-      );
       this.internalSelectedItems = this.internalSelectedItems.concat(
         filteredSelected
       );
-      if (selectedItemsNotInRows.length !== 0)
-        console.warn(
-          "The following selected items are not one of the row items!",
-          selectedItemsNotInRows
-        );
     }
   },
   watch: {
@@ -416,6 +346,15 @@ export default {
     },
   },
   computed: {
+    enablePaging() {
+      return !!this.rowsPerPage;
+    },
+    enableRadioButtons() {
+      return !!this.selectedItem;
+    },
+    enableCheckBoxes() {
+      return !!this.selectedItems;
+    },
     columnWidthsStyle() {
       if (Array.isArray(this.columns)) {
         let columnsWidths = "grid-template-columns:";
@@ -571,6 +510,85 @@ export default {
       classes += cindex % 2 === 0 ? " evenColumn" : " oddColumn";
       classes += rindex % 2 === 0 ? " evenRow" : " oddRow";
       return classes;
+    },
+    errorPropValidations() {
+      // validate columns
+      if (!this.columns) {
+        console.error("columns is a required prop");
+        return false;
+      }
+      if (!Array.isArray(this.columns)) {
+        console.error(
+          "'columns' prop must be an array, not",
+          typeof this.columns
+        );
+        return false;
+      }
+      if (this.columns.length === 0) {
+        console.error(
+          "'columns' array is empty, no table data will be displayed"
+        );
+        return false;
+      }
+      if (this.columns.find((c) => typeof c !== "object")) {
+        console.error("All columns must be objects");
+        return false;
+      }
+      if (this.columns.find((c) => !c.property)) {
+        console.error("'property' is a required field on all columns");
+        return false;
+      }
+      if (this.columns.find((c) => typeof c.property !== "string")) {
+        console.error("The 'property' field on all columns must be a string");
+        return false;
+      }
+
+      // Rows Per Page
+      if (this.rowsPerPage < 1) {
+        console.error("The 'rowsPerPage' prop should be greater than 0");
+        return false;
+      }
+      return true;
+    },
+    warningPropValidations() {
+      // enableAccordianforDetailRow
+      if (
+        this.enableAccordianforDetailRow &&
+        this.enableAccordianforDetailRow !== "single" &&
+        this.enableAccordianforDetailRow !== "multi"
+      ) {
+        console.warn(
+          "The 'enableAccordianforDetailRow' prop should be 'single' or 'multi', not ",
+          this.enableAccordianforDetailRow
+        );
+      }
+
+      if (this.rows && typeof Array.isArray(this.rows)) {
+        // selectedItem
+        if (
+          this.selectedItem &&
+          !isEmpty(this.selectedItem) &&
+          !this.rows.find((r) => r === this.selectedItem)
+        ) {
+          console.warn(
+            "The 'selectedItem' prop is not one of the objects in the rows: ",
+            this.selectedItem
+          );
+        }
+        //selectedItems
+        if (this.selectedItems) {
+          const selectedItemsNotInRows = difference(
+            this.selectedItems,
+            this.rows
+          );
+          if (selectedItemsNotInRows.length > 0) {
+            console.warn(
+              "These selected items are not in the rows: ",
+              selectedItemsNotInRows
+            );
+          }
+        }
+      }
     },
   },
 };

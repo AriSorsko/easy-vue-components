@@ -1,9 +1,8 @@
 Error checking
-    Required props
-    When all cells in a column are empty, was the field in the row objects? Was a similar field in the row objects?
+    unsupported column property
+    groups prop: but only after figuring out a better way to do grouping...
+        check out the groupBy and flatten functions in lodash
     passed slots that don't match
-    See if the prop warnings can utilize prop validator functions
-        https://vuejs.org/v2/guide/components-props.html#Type-Checks
 Header slots
 Export search/paging components
 Refactor search/filter into another reusable component

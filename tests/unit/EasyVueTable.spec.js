@@ -305,9 +305,9 @@ describe("EasyVueTable.vue", () => {
     });
   });
 
-  it("enableRadioButtons prop adds a radio button column", () => {
+  it("Passing a value to the selectedItem prop adds a radio button column", () => {
     const wrapper = mount(EasyVueTable, {
-      propsData: { columns, rows, enableRadioButtons: true },
+      propsData: { columns, rows, selectedItem: {} },
     });
 
     const radio0 = wrapper.findComponent({ ref: "radio_0" });
@@ -319,7 +319,6 @@ describe("EasyVueTable.vue", () => {
       propsData: {
         columns,
         rows,
-        enableRadioButtons: true,
         selectedItem: rows[0],
       },
     });
@@ -333,7 +332,7 @@ describe("EasyVueTable.vue", () => {
       propsData: {
         columns,
         rows,
-        enableRadioButtons: true,
+        selectedItem: {},
       },
     });
 
@@ -345,9 +344,9 @@ describe("EasyVueTable.vue", () => {
     });
   });
 
-  it("enableCheckBoxes prop adds a checkboxes column", () => {
+  it("Passing a value to the selectedItems prop adds a checkboxes column", () => {
     const wrapper = mount(EasyVueTable, {
-      propsData: { columns, rows, enableCheckBoxes: true },
+      propsData: { columns, rows, selectedItems: [] },
     });
 
     const check0 = wrapper.findComponent({ ref: "check_0" });
@@ -359,7 +358,6 @@ describe("EasyVueTable.vue", () => {
       propsData: {
         columns,
         rows,
-        enableCheckBoxes: true,
         selectedItems: [rows[0], rows[1]],
       },
     });
@@ -377,7 +375,7 @@ describe("EasyVueTable.vue", () => {
       propsData: {
         columns,
         rows,
-        enableCheckBoxes: true,
+        selectedItems: [],
       },
     });
 
@@ -396,7 +394,6 @@ describe("EasyVueTable.vue", () => {
       propsData: {
         columns,
         rows,
-        enableCheckBoxes: true,
         selectedItems: [rows[0], rows[1], rows[2]],
       },
     });
@@ -411,7 +408,6 @@ describe("EasyVueTable.vue", () => {
       propsData: {
         columns,
         rows,
-        enableCheckBoxes: true,
         selectedItems: [],
       },
     });
@@ -426,7 +422,6 @@ describe("EasyVueTable.vue", () => {
       propsData: {
         columns,
         rows,
-        enableCheckBoxes: true,
         selectedItems: [rows[0]],
       },
     });
@@ -441,7 +436,6 @@ describe("EasyVueTable.vue", () => {
       propsData: {
         columns,
         rows,
-        enableCheckBoxes: true,
         selectedItems: [],
       },
     });
@@ -466,7 +460,6 @@ describe("EasyVueTable.vue", () => {
       propsData: {
         columns,
         rows,
-        enableCheckBoxes: true,
         selectedItems: [rows[0]],
       },
     });
@@ -491,7 +484,6 @@ describe("EasyVueTable.vue", () => {
       propsData: {
         columns,
         rows,
-        enableCheckBoxes: true,
         selectedItems: [rows[0], rows[1], rows[2]],
       },
     });
