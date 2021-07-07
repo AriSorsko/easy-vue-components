@@ -4,7 +4,6 @@ Error checking
         check out the groupBy and flatten functions in lodash
     passed slots that don't match
 Header slots
-Export search/paging components
 Refactor search/filter into another reusable component
     Also add magnifying glass icon
     Search term highlighting
@@ -24,6 +23,7 @@ Partial data sets (i.e. loading page 0-20 of 5000)
     https://vuejs.org/v2/guide/components-dynamic-async.html#Handling-Loading-State
 Documentation
 test all forms of installation (vue.use() and with script)
+stress test with large data sets
 
 Themes?
 "fuzzy" search?
