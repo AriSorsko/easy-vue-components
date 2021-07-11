@@ -1,13 +1,6 @@
 <template>
   <div>
-    <input
-      v-if="enableTableSearching"
-      v-model="tableSearch"
-      placeholder="Search"
-      class="searchInput"
-      id="searchInput"
-      ref="searchInput"
-    />
+    <Search v-if="enableTableSearching" :searchTerm.sync="searchTerm" />
 
     <div id="container" :style="columnWidthsStyle" ref="container">
       <!-- Empty div to keep the headers lined up with their columns when there are exapnd/collapse buttons  -->
@@ -149,13 +142,13 @@
 
             <!-- Detail row -->
             <div
-              class="detailRowSlot"
+              class="spanAllColumns"
               :key="JSON.stringify(row)"
               v-if="
                 !enableAccordianforDetailRow || openDetailRows.includes(row)
               "
             >
-              <slot name="detailRowSlot" v-bind="row" />
+              <slot name="spanAllColumns" v-bind="row" />
             </div>
           </div>
         </div>
@@ -214,10 +207,6 @@
   text-align: left;
 }
 
-.detailRowSlot {
-  grid-column: 1/-1;
-}
-
 .searchInput {
   display: block;
 }
@@ -239,6 +228,7 @@ import {
   sortBy,
 } from "lodash";
 import Pages from "./Pages.vue";
+import Search from "./Search.vue";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
   faArrowUp,
@@ -255,7 +245,7 @@ library.add(faAngleRight);
 
 export default {
   name: "EasyVueTable",
-  components: { FontAwesomeIcon, Pages },
+  components: { FontAwesomeIcon, Pages, Search },
   props: {
     columns: { type: Array, required: true },
     rows: { type: Array, required: true },
@@ -289,7 +279,7 @@ export default {
       internalSelectedItem: null,
       internalSelectedItems: [],
       openDetailRows: [],
-      tableSearch: "",
+      searchTerm: "",
       startIndex: 0,
       endIndex: 0,
     };
@@ -391,11 +381,15 @@ export default {
     sortedFilteredAndGroupedRows() {
       let sortedFilteredRows = this.sortedRows;
 
-      if (this.tableSearch && this.enableTableSearching) {
+      if (this.searchTerm && this.enableTableSearching) {
         sortedFilteredRows = sortedFilteredRows.filter((row) => {
+          // Note: stringifyRow only includes visible fields
+          // That way searching for say "12" doesn't incorrectly
+          // also include rows that have a non-visible ID field
+          // that happens to include "12"
           return this.stringifyRow(row)
             .toLowerCase()
-            .includes(this.tableSearch.toLowerCase());
+            .includes(this.searchTerm.toLowerCase());
         });
       }
 

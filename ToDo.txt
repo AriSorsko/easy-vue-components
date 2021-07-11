@@ -2,10 +2,7 @@ Error checking
     groups prop: but only after figuring out a better way to do grouping...
         check out the groupBy and flatten functions in lodash
     keys in columns prop that are not supported
-Refactor search/filter into another reusable component
-    Also add magnifying glass icon
-    Search term highlighting
-    Way to work with detailRows??? Can't search in the DOM since that will only be there when that row is expdanded
+Search term highlighting: see mark.js
 Column specific search functions
     Demo with dates? and/or currencies?
     Also allow dropdowns instead of search boxes?
