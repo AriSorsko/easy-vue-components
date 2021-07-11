@@ -12,6 +12,18 @@
       :rows="teams"
       :rowsPerPage="15"
     >
+      <!-- <template v-slot:sortAscendingIcon>
+        asc!
+      </template>
+      <template v-slot:sortDescendingIcon>
+        desc!
+      </template>
+      <template v-slot:noDataMessage>
+        No Data here!
+      </template> -->
+      <template v-slot:headerLosses>
+        :'(
+      </template>
       <template v-slot:expandedDetailRowIcon>
         <font-awesome-icon icon="minus" />
       </template>

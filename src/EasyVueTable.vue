@@ -30,27 +30,35 @@
         :class="generateHeaderClasses(column.property, index)"
         :ref="'headerCell_' + index"
       >
-        {{ column.header }}
-        <span v-if="column.sortable || column.initialSort">
-          <font-awesome-icon
-            icon="arrow-down"
+        <slot :name="generateSlotName('header', column.header)" v-bind="column">
+          {{ column.header }}
+        </slot>
+
+        <span
+          v-if="column.sortable || column.initialSort"
+          @click="reverseSort(column.property)"
+        >
+          <slot
+            name="sortAscendingIcon"
+            v-bind="column"
             v-if="columnSortDirection[column.property] === 'asc'"
-            @click="reverseSort(column.property)"
-            :ref="'arrowDown_' + index"
-          />
-          <font-awesome-icon
-            icon="arrow-up"
-            v-else
-            @click="reverseSort(column.property)"
-            :ref="'arrowUp_' + index"
-          />
+          >
+            <font-awesome-icon icon="arrow-down" :ref="'arrowDown_' + index" />
+          </slot>
+          <slot name="sortDescendingIcon" v-bind="column" v-else>
+            <font-awesome-icon icon="arrow-up" :ref="'arrowUp_' + index" />
+          </slot>
         </span>
       </div>
 
       <!-- No table data -->
+
       <div v-if="!rows || rows.length === 0" class="spanAllColumns">
-        There is no data for this table.
+        <slot name="noDataMessage">
+          There is no data for this table.
+        </slot>
       </div>
+
       <!-- No table data that matches the search value-->
       <div
         v-else-if="
@@ -589,6 +597,9 @@ export default {
           }
         }
       }
+    },
+    generateSlotName(prefix, value) {
+      return camelCase(prefix + " " + value);
     },
   },
 };

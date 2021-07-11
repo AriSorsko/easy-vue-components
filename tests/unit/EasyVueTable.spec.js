@@ -220,6 +220,43 @@ describe("EasyVueTable.vue", () => {
     expect(wrapper.text()).toContain("Slot Test");
   });
 
+  it("Header cell content is replacable with slots", () => {
+    const wrapper = mount(EasyVueTable, {
+      propsData: { columns, rows },
+      scopedSlots: {
+        headerTeam: '<p slot-scope="headerTeam">Heading cell Test</p>',
+      },
+    });
+    expect(wrapper.text()).toContain("Heading cell Test");
+  });
+
+  it("Group heading content is replacable with slots", () => {
+    const wrapper = mount(EasyVueTable, {
+      propsData: { columns, rows, groups },
+      scopedSlots: {
+        groupHeader: '<p slot-scope="groupHeader">Group Heading Test</p>',
+      },
+    });
+    expect(wrapper.text()).toContain("Group Heading Test");
+  });
+
+  it("Sort icons are replacable with slots", () => {
+    const sortableColumns = [
+      {
+        header: "Team",
+        property: "name",
+        sortable: true,
+      },
+    ];
+    const wrapper = mount(EasyVueTable, {
+      propsData: { columns: sortableColumns, rows },
+      scopedSlots: {
+        sortAscendingIcon: '<p slot-scope="sortAscendingIcon">Ascending</p>',
+      },
+    });
+    expect(wrapper.text()).toContain("Ascending");
+  });
+
   it("Data starts sorted by initial sort column", () => {
     const columns = [
       {

@@ -1,9 +1,7 @@
 Error checking
-    unsupported column property
     groups prop: but only after figuring out a better way to do grouping...
         check out the groupBy and flatten functions in lodash
-    passed slots that don't match
-Header slots
+    keys in columns prop that are not supported
 Refactor search/filter into another reusable component
     Also add magnifying glass icon
     Search term highlighting
@@ -14,6 +12,9 @@ Column specific search functions
 
 Export to CSV
 Column level filtering
+
+Column sorting by priority (1.e 1 and 2 and 3) with warning if 2 columns have the same priority
+Initial column sort direction
 
 Convert the cell level row/column css class to grid-template rows/columns
 Decent default css
