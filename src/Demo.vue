@@ -2,7 +2,7 @@
   <div>
     <EasyVueTable
       id="teamsTable"
-      :enableTableSearching="true"
+      :showTableSearchInput="true"
       :groups="groups"
       :fixedHeader="true"
       :selectedItem.sync="selectedItem"
@@ -11,7 +11,12 @@
       :columns="columns"
       :rows="teams"
       :rowsPerPage="15"
+      :highlightOptions="highlightOptions"
     >
+      <!-- 
+      :enableSearchFilter="false"
+      :enableSearchHighlight="false"
+       -->
       <!-- <template v-slot:sortAscendingIcon>
         asc!
       </template>
@@ -122,6 +127,9 @@ export default {
     return {
       selectedItem: null,
       selectedItems: [],
+      highlightOptions: {
+        exclude: ["button"],
+      },
       columns: [
         {
           header: "Team",

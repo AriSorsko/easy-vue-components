@@ -21,6 +21,7 @@
     "@fortawesome/vue-fontawesome": "^2.0.2",
     "core-js": "^3.6.5",
     "lodash": "^4.17.20",
+    "mark.js": "^8.11.1",
     "vue": "^2.6.11",
     "vue-fontawesome": "0.0.2"
   },

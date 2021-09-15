@@ -1,8 +1,14 @@
 <template>
   <div>
-    <Search v-if="enableTableSearching" :searchTerm.sync="searchTerm" />
+    <Search
+      v-if="showTableSearchInput"
+      :searchTerm.sync="searchTerm"
+      :highlightQuerySelector="enableSearchHighlight ? '#tableContainer' : null"
+      :highlightOptions="highlightOptions"
+      ref="searchInput"
+    />
 
-    <div id="container" :style="columnWidthsStyle" ref="container">
+    <div id="tableContainer" :style="columnWidthsStyle" ref="tableContainer">
       <!-- Empty div to keep the headers lined up with their columns when there are exapnd/collapse buttons  -->
       <div v-if="enableAccordianforDetailRow" />
       <!-- Empty div to keep the headers lined up with their columns when there are radio buttons  -->
@@ -45,7 +51,6 @@
       </div>
 
       <!-- No table data -->
-
       <div v-if="!rows || rows.length === 0" class="spanAllColumns">
         <slot name="noDataMessage">
           There is no data for this table.
@@ -143,12 +148,12 @@
             <!-- Detail row -->
             <div
               class="spanAllColumns"
-              :key="JSON.stringify(row)"
+              :key="'detailRow' + rindex"
               v-if="
                 !enableAccordianforDetailRow || openDetailRows.includes(row)
               "
             >
-              <slot name="spanAllColumns" v-bind="row" />
+              <slot name="detailRowSlot" v-bind="row" />
             </div>
           </div>
         </div>
@@ -178,14 +183,12 @@
     <div>cell</div>
     <div>cell</div>
     <div>cell</div>
-    Which in this context means nested divs still end up
-    in a single long list of divs as the css grid expects
 */
 .collapseDivs {
   display: contents;
 }
 
-#container {
+#tableContainer {
   display: grid;
 }
 
@@ -226,9 +229,11 @@ import {
   isEmpty,
   reverse,
   sortBy,
+  uniq,
+  pull,
 } from "lodash";
 import Pages from "./Pages.vue";
-import Search from "./Search.vue";
+import Search from "./SearchInput.vue";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
   faArrowUp,
@@ -265,12 +270,26 @@ export default {
       type: String, // only valid values are 'single' or 'multi'
       default: null,
     },
-    enableTableSearching: {
+    rowsPerPage: Number,
+    groups: Array,
+    showTableSearchInput: {
       type: Boolean,
       default: false,
     },
-    rowsPerPage: Number,
-    groups: Array,
+    enableSearchFilter: {
+      type: Boolean,
+      default: true,
+    },
+    enableSearchHighlight: {
+      type: Boolean,
+      default: true,
+    },
+    highlightOptions: {
+      type: Object,
+      default() {
+        return {};
+      },
+    },
   },
   data() {
     return {
@@ -381,7 +400,7 @@ export default {
     sortedFilteredAndGroupedRows() {
       let sortedFilteredRows = this.sortedRows;
 
-      if (this.searchTerm && this.enableTableSearching) {
+      if (this.searchTerm && this.enableSearchFilter) {
         sortedFilteredRows = sortedFilteredRows.filter((row) => {
           // Note: stringifyRow only includes visible fields
           // That way searching for say "12" doesn't incorrectly
@@ -411,6 +430,7 @@ export default {
         });
         groupedRows = groupedRows.concat(rowsWithGroup);
       });
+
       return groupedRows;
     },
     rowsToShow() {
@@ -436,7 +456,6 @@ export default {
         }
         displayRows[displayRows.length - 1].rows.push(gr.row);
       });
-
       return displayRows;
     },
     allChecked: {
@@ -444,11 +463,33 @@ export default {
         return this.internalSelectedItems.length === this.rows.length;
       },
       set(checked) {
-        this.internalSelectedItems = [];
         if (checked) {
-          this.internalSelectedItems = this.internalSelectedItems.concat(
-            this.rows
-          );
+          // it is a bit confusing to "check all" and only have some items be checked,
+          // while the check all box remains indeterminate, but checking filtered out
+          // rows is even more confusing, as is showing that "all rows are checked"
+          // even if only some rows are checked. Life is messy, when rows are filtered
+          // by a search term just add the rows that pass the filter to the selected rows.
+          if (this.searchTerm) {
+            this.sortedFilteredAndGroupedRows.forEach((group) => {
+              this.internalSelectedItems.push(group.row);
+            });
+            this.internalSelectedItems = uniq(this.internalSelectedItems);
+          } else {
+            this.internalSelectedItems = this.internalSelectedItems.concat(
+              this.sortedRows
+            );
+          }
+        } else {
+          if (this.searchTerm) {
+            // TODO: these objects are getting copied at some point so this
+            // does not currently work. Will refactor grouping so that is
+            // no longer an issue.
+            this.sortedFilteredAndGroupedRows.forEach((group) => {
+              pull(this.internalSelectedItems, group.row);
+            });
+          } else {
+            this.internalSelectedItems = [];
+          }
         }
       },
     },
@@ -590,6 +631,17 @@ export default {
             );
           }
         }
+      }
+
+      // searching
+      if (
+        this.showTableSearchInput &&
+        !this.enableSearchFilter &&
+        !this.enableSearchHighlight
+      ) {
+        console.warn(
+          "The search field is visible but both the enableSearchFilter and enableSearchHighlight props are disabled so searching will have no effect"
+        );
       }
     },
     generateSlotName(prefix, value) {

@@ -139,13 +139,13 @@ describe("EasyVueTable.vue", () => {
     expect(thirdCell.text()).toContain("Unicorns");
   });
 
-  it("Column widths are included in the container style", () => {
+  it("Column widths are included in the tableContainer style", () => {
     const wrapper = mount(EasyVueTable, {
       propsData: { columns, rows },
     });
 
-    const container = wrapper.findComponent({ ref: "container" });
-    expect(container.attributes("style")).toBe(
+    const tableContainer = wrapper.findComponent({ ref: "tableContainer" });
+    expect(tableContainer.attributes("style")).toBe(
       "grid-template-columns: auto 140px 150px auto;"
     );
   });
@@ -568,14 +568,12 @@ describe("EasyVueTable.vue", () => {
 
   it("The table rows are filtered based on the table search term", () => {
     const wrapper = mount(EasyVueTable, {
-      propsData: { columns, rows, enableTableSearching: true },
+      propsData: { columns, rows, showTableSearchInput: true },
     });
 
-    const searchInput = wrapper.findComponent({ ref: "searchInput" });
-    expect(searchInput).toBeTruthy();
     const firstCell = wrapper.findComponent({ ref: "rowCell_0_0_0" });
     expect(firstCell.text()).toContain("Panthers");
-    searchInput.setValue("0").then(() => {
+    wrapper.setData({ searchTerm: "0" }).then(() => {
       const firstFilteredCell = wrapper.findComponent({ ref: "rowCell_0_0_0" });
       expect(firstFilteredCell.text()).toContain("Unicorns");
     });
@@ -583,12 +581,11 @@ describe("EasyVueTable.vue", () => {
 
   it("No matching rows message shows up when the search value filters out all the rows", () => {
     const wrapper = mount(EasyVueTable, {
-      propsData: { columns, rows, enableTableSearching: true },
+      propsData: { columns, rows, showTableSearchInput: true },
     });
 
-    const searchInput = wrapper.findComponent({ ref: "searchInput" });
     expect(wrapper.text()).toContain("Panthers");
-    searchInput.setValue("abc123").then(() => {
+    wrapper.setData({ searchTerm: "abc123" }).then(() => {
       expect(wrapper.text()).toContain("No rows match the search");
       expect(wrapper.text()).not.toContain("Panthers");
     });
