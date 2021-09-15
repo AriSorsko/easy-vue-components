@@ -544,18 +544,18 @@ describe("EasyVueTable.vue", () => {
     const wrapper = mount(EasyVueTable, {
       propsData: { columns, rows },
       scopedSlots: {
-        edit: `
+        detailRowSlot: `
         <template v-slot:detailRowSlot="row">
-          Detail Slot
+          Some Row Details
         </template>`,
       },
     });
-    expect(wrapper.text()).toContain("Detail Slot");
+    expect(wrapper.text()).toContain("Some Row Details");
   });
 
-  it("enableAccordianforDetailRow prop shows the expand/collapse icons and thos icons work", () => {
+  it("enableDetailRowAccordian prop shows the expand/collapse icons and those icons work", () => {
     const wrapper = mount(EasyVueTable, {
-      propsData: { columns, rows, enableAccordianforDetailRow: "single" },
+      propsData: { columns, rows, enableDetailRowAccordian: true },
     });
 
     const angleRight0 = wrapper.findComponent({ ref: "angleRight_0" });
@@ -563,6 +563,33 @@ describe("EasyVueTable.vue", () => {
     angleRight0.trigger("click").then(() => {
       const angleDown0 = wrapper.findComponent({ ref: "angleDown_0" });
       expect(angleDown0).toBeTruthy();
+    });
+  });
+
+  it("onlyShowOneDetailRow closes previously open detail rows when a new detail row is opened", async () => {
+    const wrapper = mount(EasyVueTable, {
+      propsData: {
+        columns,
+        rows,
+        enableDetailRowAccordian: true,
+        onlyShowOneDetailRow: true,
+      },
+      scopedSlots: {
+        detailRowSlot: `
+        <template v-slot:detailRowSlot="row">
+          Some Row Details:{{row.name}}
+        </template>`,
+      },
+    });
+
+    const angleRight0 = wrapper.findComponent({ ref: "angleRight_0" });
+    angleRight0.trigger("click").then(() => {
+      expect(wrapper.text()).toContain("Some Row Details:Panthers");
+      const angleRight1 = wrapper.findComponent({ ref: "angleRight_1" });
+      angleRight1.trigger("click").then(() => {
+        expect(wrapper.text()).not.toContain("Some Row Details:Panthers");
+        expect(wrapper.text()).toContain("Some Row Details:Bobcats");
+      });
     });
   });
 

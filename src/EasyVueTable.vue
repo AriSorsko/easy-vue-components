@@ -10,7 +10,7 @@
 
     <div id="tableContainer" :style="columnWidthsStyle" ref="tableContainer">
       <!-- Empty div to keep the headers lined up with their columns when there are exapnd/collapse buttons  -->
-      <div v-if="enableAccordianforDetailRow" />
+      <div v-if="enableDetailRowAccordian" />
       <!-- Empty div to keep the headers lined up with their columns when there are radio buttons  -->
       <div v-if="enableRadioButtons" />
       <!-- Toggle all of the check boxes  -->
@@ -91,7 +91,7 @@
             class="collapseDivs"
           >
             <!-- Expand/Collapse controls for the details row -->
-            <div v-if="enableAccordianforDetailRow">
+            <div v-if="enableDetailRowAccordian">
               <div
                 v-if="openDetailRows.includes(row)"
                 @click="collapseRow(row)"
@@ -149,9 +149,7 @@
             <div
               class="spanAllColumns"
               :key="'detailRow' + rindex"
-              v-if="
-                !enableAccordianforDetailRow || openDetailRows.includes(row)
-              "
+              v-if="!enableDetailRowAccordian || openDetailRows.includes(row)"
             >
               <slot name="detailRowSlot" v-bind="row" />
             </div>
@@ -266,9 +264,13 @@ export default {
       type: Array,
       default: null,
     },
-    enableAccordianforDetailRow: {
-      type: String, // only valid values are 'single' or 'multi'
-      default: null,
+    enableDetailRowAccordian: {
+      type: Boolean,
+      default: false,
+    },
+    onlyShowOneDetailRow: {
+      type: Boolean,
+      default: false,
     },
     rowsPerPage: Number,
     groups: Array,
@@ -381,10 +383,7 @@ export default {
         if (this.enableCheckBoxes) {
           columnsWidths += " 2em";
         }
-        if (
-          this.enableAccordianforDetailRow === "single" ||
-          this.enableAccordianforDetailRow === "multi"
-        ) {
+        if (this.enableDetailRowAccordian) {
           columnsWidths += " 2em";
         }
 
@@ -527,8 +526,7 @@ export default {
       this.openDetailRows = this.openDetailRows.filter((r) => r !== row);
     },
     expandRow(row) {
-      if (this.enableAccordianforDetailRow === "single")
-        this.openDetailRows = [];
+      if (this.onlyShowOneDetailRow) this.openDetailRows = [];
       this.openDetailRows.push(row);
     },
     reverseSort(columnProperty) {
@@ -594,15 +592,11 @@ export default {
       return true;
     },
     warningPropValidations() {
-      // enableAccordianforDetailRow
-      if (
-        this.enableAccordianforDetailRow &&
-        this.enableAccordianforDetailRow !== "single" &&
-        this.enableAccordianforDetailRow !== "multi"
-      ) {
+      // enableDetailRowAccordian
+      if (this.onlyShowOneDetailRow && !this.enableDetailRowAccordian) {
         console.warn(
-          "The 'enableAccordianforDetailRow' prop should be 'single' or 'multi', not ",
-          this.enableAccordianforDetailRow
+          "The 'onlyShowOneDetailRow' prop is only valid when the enableDetailRowAccordian is true",
+          this.enableDetailRowAccordian
         );
       }
 

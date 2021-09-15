@@ -3,7 +3,7 @@
     <div id="searchContainer" class="searchContainer">
       <font-awesome-icon
         icon="search"
-        ref="search"
+        ref="searchIcon"
         class="searchIcon"
         id="searchIcon"
       />
@@ -12,6 +12,7 @@
         placeholder="Search"
         class="searchInput"
         id="searchInput"
+        ref="searchInput"
       />
     </div>
   </div>
