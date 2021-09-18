@@ -245,7 +245,10 @@ describe("EasyVueTable.vue", () => {
       {
         header: "Team",
         property: "name",
-        sortable: true,
+        sort: {
+          priority: 0,
+          direction: "ascending",
+        },
       },
     ];
     const wrapper = mount(EasyVueTable, {
@@ -257,18 +260,24 @@ describe("EasyVueTable.vue", () => {
     expect(wrapper.text()).toContain("Ascending");
   });
 
-  it("Data starts sorted by initial sort column", () => {
+  it("Data starts sorted by the first priority column", () => {
     const columns = [
       {
         header: "Team",
         property: "name",
-        initialSort: true,
+        sort: {
+          priority: 0,
+          direction: "ascending",
+        },
       },
       {
         header: "Number of Wins",
         property: "wins",
         width: "140px",
-        sortable: true,
+        sort: {
+          priority: 1,
+          direction: "ascending",
+        },
       },
     ];
 
@@ -284,18 +293,24 @@ describe("EasyVueTable.vue", () => {
     expect(c20.text()).toBe("Unicorns");
   });
 
-  it("Sortable columns start with down arrow", () => {
+  it("Sortable columns start with an arrow indicating their initial sort direction", () => {
     const columns = [
       {
         header: "Team",
         property: "name",
-        initialSort: true,
+        sort: {
+          priority: 0,
+          direction: "ascending",
+        },
       },
       {
         header: "Number of Wins",
         property: "wins",
         width: "140px",
-        sortable: true,
+        sort: {
+          priority: 1,
+          direction: "descending",
+        },
       },
     ];
 
@@ -305,7 +320,7 @@ describe("EasyVueTable.vue", () => {
 
     const ad0 = wrapper.findComponent({ ref: "arrowDown_0" });
     expect(ad0).toBeTruthy();
-    const ad1 = wrapper.findComponent({ ref: "arrowDown_1" });
+    const ad1 = wrapper.findComponent({ ref: "arrowUp_1" });
     expect(ad1).toBeTruthy();
   });
 
@@ -314,13 +329,19 @@ describe("EasyVueTable.vue", () => {
       {
         header: "Team",
         property: "name",
-        initialSort: true,
+        sort: {
+          priority: 0,
+          direction: "ascending",
+        },
       },
       {
         header: "Number of Wins",
         property: "wins",
         width: "140px",
-        sortable: true,
+        sort: {
+          priority: 2,
+          direction: "ascending",
+        },
       },
     ];
 

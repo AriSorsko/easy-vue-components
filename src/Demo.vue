@@ -58,7 +58,17 @@
 </template>
 
 <style scoped>
-#teamsTable /deep/ .headerName {
+#playersTable {
+  position: relative;
+  left: 2em;
+  width: 400px;
+}
+
+/* #teamsTable /deep/ .row:hover div {
+  background-color: lightgray;
+} */
+
+/* #teamsTable /deep/ .headerName {
   font-style: italic;
 }
 #teamsTable /deep/ .name {
@@ -79,14 +89,6 @@
   color: red;
 }
 
-/* /deep/ .evenColumn {
-  background-color: rgba(220, 220, 220, 0.5);
-}
-
-/deep/ .oddColumn {
-  background-color: rgba(220, 220, 220, 0.2);
-} */
-
 #teamsTable /deep/ .evenRow {
   background-color: rgba(240, 248, 255, 0.5);
 }
@@ -94,19 +96,21 @@
 #teamsTable /deep/ .oddRow {
   background-color: rgba(240, 248, 255, 0.2);
 }
-
-#playersTable {
-  position: relative;
-  left: 2em;
-  width: 400px;
-}
 #playersTable /deep/ .name {
   color: black;
 }
 
 #teamsTable /deep/ .groupHeader {
   color: purple;
+} */
+
+/* /deep/ .evenColumn {
+  background-color: rgba(220, 220, 220, 0.5);
 }
+
+/deep/ .oddColumn {
+  background-color: rgba(220, 220, 220, 0.2);
+} */
 </style>
 
 <script>
@@ -135,12 +139,18 @@ export default {
         {
           header: "Team",
           property: "name",
-          initialSort: true,
+          sort: {
+            priority: 0,
+            direction: "ascending",
+          },
         },
         {
           header: "Wins",
           property: "wins",
-          sortable: true,
+          sort: {
+            priority: 1,
+            direction: "ascending",
+          },
         },
         {
           header: "Losses",
@@ -154,7 +164,10 @@ export default {
         {
           header: "School",
           property: "details.school",
-          sortable: true,
+          sort: {
+            priority: 2,
+            direction: "ascending",
+          },
         },
         {
           // header: "Edit",
@@ -165,17 +178,26 @@ export default {
         {
           header: "Player Name",
           property: "name",
-          initialSort: true,
+          sort: {
+            priority: 0,
+            direction: "ascending",
+          },
         },
         {
           header: "Baskets",
           property: "baskets",
-          sortable: true,
+          sort: {
+            priority: 1,
+            direction: "ascending",
+          },
         },
         {
           header: "Assists",
           property: "assists",
-          sortable: true,
+          sort: {
+            priority: 2,
+            direction: "ascending",
+          },
         },
       ],
       teams: [

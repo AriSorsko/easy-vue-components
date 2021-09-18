@@ -1,32 +1,22 @@
 Error checking
     groups prop: but only after figuring out a better way to do grouping...
         check out the groupBy and flatten functions in lodash
+Decent default css
+test all forms of installation (vue.use() and with script)
+select "all"/deselect "all" should only apply to the visible members.
+Documentation
+
+
+Post 1.0:
+dynamic load more rows on scroll to bottom of table
+Partial data sets (i.e. loading page 0-20 of 5000)
+    Include loading indicator
+    https://vuejs.org/v2/guide/components-dynamic-async.html#Handling-Loading-State
+    events for search/paging/sorting
 Column specific filter/search functions
     Demo with dates? and/or currencies?
     Also allow dropdowns instead of search boxes?
 Export to CSV
-Column level filtering
-
-Column sorting by priority (1.e 1 and 2 and 3) with warning if 2 columns have the same priority
-Initial column sort direction
 full row slot: demo inline  editing (for Documentation, use ISS astronauts as an example)
-
-Convert the cell level row/column css class to grid-template rows/columns
-Decent default css
-Partial data sets (i.e. loading page 0-20 of 5000)
-    Warning: search/sort/paging need to be handled by the parent in this case!
-    Include loading indicator
-    https://vuejs.org/v2/guide/components-dynamic-async.html#Handling-Loading-State
-Documentation
-test all forms of installation (vue.use() and with script)
-stress test with large data sets
 drag and drop ->both within the table and to external target
-dynamic load more rows on scroll to bottom of table
-
-Themes?
-"fuzzy" search? Can I re-use mark.js's pattern matching so the highlight and filter searches always match?
-Group filter that accepts an array?
-
-select all/deselect all should only apply to the visible members.
-checkboxes at the group level in addition to the full table.
-
+checkboxes at the group level in addition to the full table 

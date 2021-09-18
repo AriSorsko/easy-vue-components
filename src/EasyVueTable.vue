@@ -34,13 +34,13 @@
         </slot>
 
         <span
-          v-if="column.sortable || column.initialSort"
+          v-if="column.sort || column.initialSort"
           @click="reverseSort(column.property)"
         >
           <slot
             name="sortAscendingIcon"
             v-bind="column"
-            v-if="columnSortDirection[column.property] === 'asc'"
+            v-if="columnSortDirection[column.property] === 'ascending'"
           >
             <font-awesome-icon icon="arrow-down" :ref="'arrowDown_' + index" />
           </slot>
@@ -73,7 +73,7 @@
         <div
           v-for="(group, gindex) in rowsToShow"
           :key="gindex"
-          class="collapseDivs"
+          class="collapseDivs "
         >
           <!-- Header row for groups -->
           <div
@@ -88,7 +88,7 @@
           <div
             v-for="(row, rindex) in group.rows"
             :key="rindex"
-            class="collapseDivs"
+            class="collapseDivs row"
           >
             <!-- Expand/Collapse controls for the details row -->
             <div v-if="enableDetailRowAccordian">
@@ -211,6 +211,9 @@
 .searchInput {
   display: block;
 }
+
+/* Note: gap leaves spaces when 
+highlighting a row on hover etc. */
 .cellPadding {
   padding-left: 2px;
   padding-right: 2px;
@@ -220,7 +223,7 @@
 <script>
 import {
   camelCase,
-  cloneDeep,
+  clone,
   difference,
   get,
   intersection,
@@ -313,32 +316,25 @@ export default {
 
     if (!this.rows) return;
 
-    // Handle sorting setup
-    const initialSortColumns = this.columns.filter((c) => c.initialSort);
-    const sortableColumns = this.columns.filter((c) => c.sortable);
-    let initialSortColumn;
-    if (initialSortColumns.length > 0) {
-      if (initialSortColumns.length > 1) {
-        const columnNames = initialSortColumns.map((c) => c.header);
-        console.warn(
-          `There are multiple initialSortColumns, please choose 1 column to initially sort by.
-            The current initial sort columns are: ` + columnNames.join(", ")
-        );
-      }
-      initialSortColumn = initialSortColumns[0];
-    } else {
-      if (sortableColumns.length > 0) initialSortColumn = sortableColumns[0];
-    }
-    this.sortedRows = cloneDeep(this.rows);
-    let sortingProperties = initialSortColumn
-      ? [initialSortColumn.property]
-      : [];
-    const sortableColumnProperties = sortableColumns.map((c) => c.property);
-    sortingProperties = sortingProperties.concat(sortableColumnProperties);
-    this.sortedRows = sortBy(this.sortedRows, sortingProperties);
+    this.sortedRows = clone(this.rows);
 
-    sortingProperties.forEach((sortableColumnPropery) => {
-      this.columnSortDirection[sortableColumnPropery] = "asc";
+    // ToDo: Handle grouping here
+
+    // Handle sorting setup
+    let sortableColumns = this.columns.filter((c) => {
+      return c.sort && typeof c.sort.priority === "number" && c.sort.direction;
+    });
+    sortableColumns = sortBy(sortableColumns, ["sort.priority"]);
+    sortableColumns = reverse(sortableColumns);
+
+    sortableColumns.forEach((sortableColumn) => {
+      console.log("sortableColumn", sortableColumn);
+      this.columnSortDirection[sortableColumn.property] =
+        sortableColumn.sort.direction;
+
+      this.sortedRows = sortBy(this.sortedRows, [sortableColumn.property]);
+      if (sortableColumn.sort.direction === "descending")
+        this.sortedRows = reverse(this.sortedRows);
     });
 
     // Handle radio buttons setup
@@ -531,10 +527,10 @@ export default {
     },
     reverseSort(columnProperty) {
       this.sortedRows = sortBy(this.sortedRows, [columnProperty]);
-      if (this.columnSortDirection[columnProperty] === "asc") {
-        this.columnSortDirection[columnProperty] = "desc";
+      if (this.columnSortDirection[columnProperty] === "ascending") {
+        this.columnSortDirection[columnProperty] = "descending";
         this.sortedRows = reverse(this.sortedRows);
-      } else this.columnSortDirection[columnProperty] = "asc";
+      } else this.columnSortDirection[columnProperty] = "ascending";
     },
     generateHeaderClasses(header, index) {
       let classes = camelCase(header);
@@ -551,6 +547,9 @@ export default {
       classes += cindex % 2 === 0 ? " evenColumn" : " oddColumn";
       classes += rindex % 2 === 0 ? " evenRow" : " oddRow";
       return classes;
+    },
+    generateSlotName(prefix, value) {
+      return camelCase(prefix + " " + value);
     },
     errorPropValidations() {
       // validate columns
@@ -634,12 +633,48 @@ export default {
         !this.enableSearchHighlight
       ) {
         console.warn(
-          "The search field is visible but both the enableSearchFilter and enableSearchHighlight props are disabled so searching will have no effect"
+          "The search input is visible but both the enableSearchFilter and the enableSearchHighlight props are disabled so searching will have no effect"
         );
       }
-    },
-    generateSlotName(prefix, value) {
-      return camelCase(prefix + " " + value);
+
+      // sorting
+      let sortableColumns = this.columns.filter((c) => {
+        return c.sort;
+      });
+      sortableColumns = sortBy(sortableColumns, ["sort.priority"]);
+      let lastSortableColumn = null;
+      sortableColumns.forEach((column) => {
+        const sortOptions = column.sort;
+
+        if (typeof sortOptions.priority !== "number") {
+          console.warn(
+            "The sort priority option must be a number. For column " +
+              column.property +
+              " it is a " +
+              typeof sortOptions.priority
+          );
+        }
+        if (!["ascending", "descending"].includes(sortOptions.direction)) {
+          console.warn(
+            "The sort direction option must be either 'ascending' or 'descending'. For column " +
+              column.property +
+              " it is " +
+              sortOptions.direction
+          );
+        }
+        if (
+          lastSortableColumn !== null &&
+          lastSortableColumn.sort.priority === column.sort.priority
+        ) {
+          console.warn(
+            "The sort priority option for column " +
+              column.property +
+              " is the same as the sort priority option for " +
+              lastSortableColumn.property
+          );
+        }
+        lastSortableColumn = column;
+      });
     },
   },
 };
