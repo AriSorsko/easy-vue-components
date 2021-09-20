@@ -8,7 +8,7 @@
       :selectedItem.sync="selectedItem"
       :selectedItems.sync="selectedItems"
       :enableDetailRowAccordian="true"
-      :onlyShowOneDetailRow="false"
+      :onlyShowOneDetailRow="true"
       :columns="columns"
       :rows="teams"
       :rowsPerPage="15"
@@ -36,9 +36,9 @@
       <template v-slot:collapsedDetailRowIcon>
         <font-awesome-icon icon="plus" />
       </template>
-      <template v-slot:groupHeader="group">
+      <!-- <template v-slot:groupHeader="group">
         <span style="font-weight: bold">{{ group.header }}</span>
-      </template>
+      </template> -->
 
       <template v-slot:edit="row">
         <button>Edit {{ row.name }}</button>

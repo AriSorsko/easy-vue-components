@@ -1,9 +1,13 @@
-Error checking
-    groups prop: but only after figuring out a better way to do grouping...
-        check out the groupBy and flatten functions in lodash
+Support arrays in groups in addition to the filter functions
 Decent default css
 test all forms of installation (vue.use() and with script)
-select "all"/deselect "all" should only apply to the visible members.
+Optional options for Columns:
+    displayFunction (i.e. to convert timestamps in ms since epoch into dates)
+    custom sort function
+    classes function- pass whole row, demo interest rate + loan amount > total monthly expense is an Error
+    classes string
+    excludeFromSearch- also add this to the mark.js exclude options
+enableRadioButtons and enableCheckBoxes should be their own props
 Documentation
 
 
@@ -13,9 +17,6 @@ Partial data sets (i.e. loading page 0-20 of 5000)
     Include loading indicator
     https://vuejs.org/v2/guide/components-dynamic-async.html#Handling-Loading-State
     events for search/paging/sorting
-Column specific filter/search functions
-    Demo with dates? and/or currencies?
-    Also allow dropdowns instead of search boxes?
 Export to CSV
 full row slot: demo inline  editing (for Documentation, use ISS astronauts as an example)
 drag and drop ->both within the table and to external target

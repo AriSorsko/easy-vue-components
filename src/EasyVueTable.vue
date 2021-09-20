@@ -40,7 +40,7 @@
           <slot
             name="sortAscendingIcon"
             v-bind="column"
-            v-if="columnSortDirection[column.property] === 'ascending'"
+            v-if="arrowDirection[column.property] === 'ascending'"
           >
             <font-awesome-icon icon="arrow-down" :ref="'arrowDown_' + index" />
           </slot>
@@ -59,100 +59,62 @@
 
       <!-- No table data that matches the search value-->
       <div
-        v-else-if="
-          !sortedFilteredAndGroupedRows ||
-            sortedFilteredAndGroupedRows.length === 0
-        "
+        v-else-if="!displayRows || displayRows.length === 0"
         class="spanAllColumns"
       >
         No rows match the search
       </div>
 
       <!-- Data Rows -->
-      <div v-else class="collapseDivs">
+      <div v-else class="makeGridIgnoreDiv">
         <div
-          v-for="(group, gindex) in rowsToShow"
+          v-for="(group, gindex) in internalGroups"
           :key="gindex"
-          class="collapseDivs "
+          class="makeGridIgnoreDiv "
         >
-          <!-- Header row for groups -->
+          <!-- Group Header -->
           <div
-            class="spanAllColumns groupHeader"
-            v-if="group.header && group.rows.length > 0"
+            class="spanAllColumns groupHeader row"
+            v-if="showGroupHeader(group)"
           >
             <slot name="groupHeader" v-bind="group">
               {{ group.header }}
             </slot>
           </div>
 
+          <!-- Rows -->
           <div
-            v-for="(row, rindex) in group.rows"
+            v-for="(row, rindex) in displayRows.slice(
+              Math.max(group.startIndex - startIndex, 0),
+              Math.max(group.endIndex - startIndex, 0)
+            )"
             :key="rindex"
-            class="collapseDivs row"
+            class="makeGridIgnoreDiv row"
           >
-            <!-- Expand/Collapse controls for the details row -->
-            <div v-if="enableDetailRowAccordian">
-              <div
-                v-if="openDetailRows.includes(row)"
-                @click="collapseRow(row)"
-              >
-                <slot name="expandedDetailRowIcon" v-bind="row">
-                  <font-awesome-icon
-                    icon="angle-down"
-                    :ref="'angleDown_' + rindex"
-                  />
-                </slot>
-              </div>
-              <div v-else @click="expandRow(row)">
-                <slot name="collapsedDetailRowIcon" v-bind="row">
-                  <font-awesome-icon
-                    icon="angle-right"
-                    :ref="'angleRight_' + rindex"
-                  />
-                </slot>
-              </div>
-            </div>
-
-            <!-- Radio buttons -->
-            <input
-              v-if="enableRadioButtons"
-              type="radio"
-              :id="rindex"
-              :value="row"
-              v-model="internalSelectedItem"
-              :ref="'radio_' + rindex"
-            />
-
-            <!-- Check boxes -->
-            <input
-              v-if="enableCheckBoxes"
-              type="checkbox"
-              :id="rindex"
-              :value="row"
-              v-model="internalSelectedItems"
-              :ref="'check_' + rindex"
-            />
-
-            <!-- Columns for the row -->
-            <div
-              v-for="(column, cindex) in columns"
-              :key="column.property + cindex"
-              :class="generateCellClasses(column, cindex, rindex)"
-              :ref="'rowCell_' + gindex + '_' + rindex + '_' + cindex"
+            <ExpandableRow
+              class="makeGridIgnoreDiv"
+              :columns="columns"
+              :row="row"
+              :internalSelectedItem.sync="internalSelectedItem"
+              :internalSelectedItems.sync="internalSelectedItems"
+              :enableDetailRowAccordian="enableDetailRowAccordian"
+              :enableRadioButtons="enableRadioButtons"
+              :enableCheckBoxes="enableCheckBoxes"
+              :gindex="gindex"
+              :rindex="rindex"
+              :generateSlotName="generateSlotName"
+              :getCellValue="getCellValue"
+              :closeDetailRowsToggle="closeDetailRowsToggle"
+              @detailRowOpened="closeAllDetailRows"
             >
-              <slot :name="column.property" v-bind="row">
-                {{ getCellValue(row, column) }}
-              </slot>
-            </div>
-
-            <!-- Detail row -->
-            <div
-              class="spanAllColumns"
-              :key="'detailRow' + rindex"
-              v-if="!enableDetailRowAccordian || openDetailRows.includes(row)"
-            >
+              <template v-slot:expandedDetailRowIcon>
+                <slot name="expandedDetailRowIcon" v-bind="row" />
+              </template>
+              <template v-slot:collapsedDetailRowIcon>
+                <slot name="collapsedDetailRowIcon" v-bind="row" />
+              </template>
               <slot name="detailRowSlot" v-bind="row" />
-            </div>
+            </ExpandableRow>
           </div>
         </div>
       </div>
@@ -162,7 +124,7 @@
       v-if="enablePaging"
       id="pagingControls"
       class="pagingControls"
-      :numberOfitems="sortedFilteredAndGroupedRows.length"
+      :numberOfitems="totalRows"
       :itemsPerPage="rowsPerPage"
       :startIndex.sync="startIndex"
       :endIndex.sync="endIndex"
@@ -182,7 +144,7 @@
     <div>cell</div>
     <div>cell</div>
 */
-.collapseDivs {
+.makeGridIgnoreDiv {
   display: contents;
 }
 
@@ -235,6 +197,7 @@ import {
 } from "lodash";
 import Pages from "./Pages.vue";
 import Search from "./SearchInput.vue";
+import ExpandableRow from "./ExpandableRow.vue";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
   faArrowUp,
@@ -251,7 +214,7 @@ library.add(faAngleRight);
 
 export default {
   name: "EasyVueTable",
-  components: { FontAwesomeIcon, Pages, Search },
+  components: { FontAwesomeIcon, Pages, Search, ExpandableRow },
   props: {
     columns: { type: Array, required: true },
     rows: { type: Array, required: true },
@@ -298,14 +261,17 @@ export default {
   },
   data() {
     return {
-      sortedRows: [],
-      columnSortDirection: {},
+      columnSortDirection: [],
+      arrowDirection: {},
       internalSelectedItem: null,
       internalSelectedItems: [],
+      internalGroups: [],
+      totalRows: 0,
       openDetailRows: [],
       searchTerm: "",
       startIndex: 0,
       endIndex: 0,
+      closeDetailRowsToggle: false,
     };
   },
   created() {
@@ -316,25 +282,19 @@ export default {
 
     if (!this.rows) return;
 
-    this.sortedRows = clone(this.rows);
-
-    // ToDo: Handle grouping here
-
     // Handle sorting setup
     let sortableColumns = this.columns.filter((c) => {
       return c.sort && typeof c.sort.priority === "number" && c.sort.direction;
     });
     sortableColumns = sortBy(sortableColumns, ["sort.priority"]);
     sortableColumns = reverse(sortableColumns);
-
     sortableColumns.forEach((sortableColumn) => {
-      console.log("sortableColumn", sortableColumn);
-      this.columnSortDirection[sortableColumn.property] =
+      this.columnSortDirection.push({
+        property: sortableColumn.property,
+        direction: sortableColumn.sort.direction,
+      });
+      this.arrowDirection[sortableColumn.property] =
         sortableColumn.sort.direction;
-
-      this.sortedRows = sortBy(this.sortedRows, [sortableColumn.property]);
-      if (sortableColumn.sort.direction === "descending")
-        this.sortedRows = reverse(this.sortedRows);
     });
 
     // Handle radio buttons setup
@@ -392,96 +352,32 @@ export default {
         return "";
       }
     },
-    sortedFilteredAndGroupedRows() {
-      let sortedFilteredRows = this.sortedRows;
-
-      if (this.searchTerm && this.enableSearchFilter) {
-        sortedFilteredRows = sortedFilteredRows.filter((row) => {
-          // Note: stringifyRow only includes visible fields
-          // That way searching for say "12" doesn't incorrectly
-          // also include rows that have a non-visible ID field
-          // that happens to include "12"
-          return this.stringifyRow(row)
-            .toLowerCase()
-            .includes(this.searchTerm.toLowerCase());
-        });
-      }
-
-      // Handle edge case where if a row is in multiple groups
-      // it will be repeated, as expected, however the paging
-      // needs to account for that so it does not end up with
-      // more rows on a page than should be there. To do that
-      // duplicate the rows that are in multiple groups before
-      // slicing for the page rows.
-      // Also the page component needs to know the number
-      // of rows, including duplicates, but excluding filtered
-      // rows. Which is why this is its own computed property.
-      let groupedRows = [];
-      const groups = this.groups ? this.groups : [{ filter: () => true }];
-      groups.forEach((group) => {
-        const rowsForGroup = this.filterByGroup(sortedFilteredRows, group);
-        const rowsWithGroup = rowsForGroup.map((row) => {
-          return { group, row };
-        });
-        groupedRows = groupedRows.concat(rowsWithGroup);
-      });
-
-      return groupedRows;
-    },
-    rowsToShow() {
-      let groupedRows = this.sortedFilteredAndGroupedRows;
-      //handle paging
-      if (this.enablePaging) {
-        groupedRows = groupedRows.slice(this.startIndex, this.endIndex);
-      }
-
-      // handle grouping part 2
-      // Turn the array of {group, row} objects into an array of {group, header, [rows]} objects
-      let displayRows = [];
-      groupedRows.forEach((gr) => {
-        if (
-          displayRows.length === 0 ||
-          displayRows[displayRows.length - 1].group !== gr.group
-        ) {
-          displayRows.push({
-            header: gr.group.header,
-            group: gr.group,
-            rows: [],
-          });
-        }
-        displayRows[displayRows.length - 1].rows.push(gr.row);
-      });
-      return displayRows;
-    },
     allChecked: {
       get() {
         return this.internalSelectedItems.length === this.rows.length;
       },
       set(checked) {
+        // it is a bit confusing to "check all" and only have some items be checked,
+        // while the check all box remains indeterminate, but checking filtered out
+        // rows is even more confusing, as is showing that "all rows are checked"
+        // even if only some rows are checked. Life is messy, when rows are filtered
+        // by a search term just add the rows that pass the filter to the selected rows.
+        const filteredRows = this.filterRowsBySearchValue(
+          this.rows,
+          this.searchTerm,
+          this.enableSearchFilter
+        );
         if (checked) {
-          // it is a bit confusing to "check all" and only have some items be checked,
-          // while the check all box remains indeterminate, but checking filtered out
-          // rows is even more confusing, as is showing that "all rows are checked"
-          // even if only some rows are checked. Life is messy, when rows are filtered
-          // by a search term just add the rows that pass the filter to the selected rows.
-          if (this.searchTerm) {
-            this.sortedFilteredAndGroupedRows.forEach((group) => {
-              this.internalSelectedItems.push(group.row);
-            });
-            this.internalSelectedItems = uniq(this.internalSelectedItems);
-          } else {
-            this.internalSelectedItems = this.internalSelectedItems.concat(
-              this.sortedRows
-            );
-          }
+          this.internalSelectedItems = this.internalSelectedItems.concat(
+            filteredRows
+          );
+          this.internalSelectedItems = uniq(this.internalSelectedItems);
         } else {
           if (this.searchTerm) {
-            // TODO: these objects are getting copied at some point so this
-            // does not currently work. Will refactor grouping so that is
-            // no longer an issue.
-            this.sortedFilteredAndGroupedRows.forEach((group) => {
-              pull(this.internalSelectedItems, group.row);
-            });
+            this.internalSelectedItems = difference(
+              this.internalSelectedItems,
+              filteredRows
+            );
           } else {
             this.internalSelectedItems = [];
           }
@@ -494,19 +390,91 @@ export default {
         this.internalSelectedItems.length < this.rows.length
       );
     },
+    displayRows() {
+      let rows = clone(this.rows);
+      rows = this.filterRowsBySearchValue(
+        rows,
+        this.searchTerm,
+        this.enableSearchFilter
+      );
+      rows = this.groupRows(rows);
+      rows = this.sortRows(rows);
+      rows = this.pageRows(rows);
+      return rows;
+    },
   },
   methods: {
-    getCellValue(row, column) {
-      return get(row, column.property, column.defaultValue);
-    },
-    filterByGroup(rows, group) {
-      if (!group.filter || typeof group.filter !== "function") {
-        console.error("Groups must have a filter field that is a function");
-        return [];
+    filterRowsBySearchValue(rows, searchTerm, enableSearchFilter) {
+      let filteredRows = rows;
+      if (searchTerm && enableSearchFilter) {
+        filteredRows = filteredRows.filter((row) => {
+          // Note: stringifyRow only includes visible fields
+          // That way searching for say "12" doesn't incorrectly
+          // also include rows that have a non-visible ID field
+          // that happens to include "12"
+          return this.stringifyRow(row)
+            .toLowerCase()
+            .includes(searchTerm.toLowerCase());
+        });
       }
-      return rows.filter((r) => {
-        return group.filter(r);
-      });
+      return filteredRows;
+    },
+    groupRows(rows) {
+      this.internalGroups = [];
+      let groupedRows = [];
+      if (this.groups) {
+        let startIndex = 0;
+        this.groups.forEach((group) => {
+          if (group.filter) {
+            const rowsInGroup = rows.filter((row) => {
+              return group.filter(row);
+            });
+            groupedRows = groupedRows.concat(rowsInGroup);
+          } else {
+            groupedRows = groupedRows.concat(group.rows);
+          }
+
+          const newGroup = {
+            header: group.header,
+            startIndex: startIndex,
+            endIndex: groupedRows.length,
+            displayHeader: true,
+          };
+          this.internalGroups.push(newGroup);
+          startIndex = groupedRows.length;
+        });
+      } else {
+        this.internalGroups.push({
+          startIndex: 0,
+          endIndex: rows.length,
+          displayHeader: false,
+        });
+        groupedRows = clone(rows);
+      }
+      this.totalRows = groupedRows.length;
+      return groupedRows;
+    },
+    sortRows(rows) {
+      if (this.columnSortDirection.length > 0) {
+        let sortedRows = [];
+        this.internalGroups.forEach((group) => {
+          let rowsInGroup = rows.slice(group.startIndex, group.endIndex);
+          this.columnSortDirection.forEach((sortableColumn) => {
+            rowsInGroup = sortBy(rowsInGroup, [sortableColumn.property]);
+            if (sortableColumn.direction === "descending")
+              rowsInGroup = reverse(rowsInGroup);
+          });
+          sortedRows = sortedRows.concat(rowsInGroup);
+        });
+        return sortedRows;
+      }
+      return rows;
+    },
+    pageRows(rows) {
+      if (this.enablePaging) {
+        return rows.slice(this.startIndex, this.endIndex);
+      }
+      return rows;
     },
     stringifyRow(row) {
       return this.columns
@@ -518,19 +486,38 @@ export default {
           return accumulator;
         });
     },
-    collapseRow(row) {
-      this.openDetailRows = this.openDetailRows.filter((r) => r !== row);
-    },
-    expandRow(row) {
-      if (this.onlyShowOneDetailRow) this.openDetailRows = [];
-      this.openDetailRows.push(row);
-    },
     reverseSort(columnProperty) {
-      this.sortedRows = sortBy(this.sortedRows, [columnProperty]);
-      if (this.columnSortDirection[columnProperty] === "ascending") {
-        this.columnSortDirection[columnProperty] = "descending";
-        this.sortedRows = reverse(this.sortedRows);
-      } else this.columnSortDirection[columnProperty] = "ascending";
+      const sortObject = this.getSortByProperty(columnProperty);
+      pull(this.columnSortDirection, [sortObject]);
+
+      if (sortObject.direction === "ascending") {
+        this.arrowDirection[columnProperty] = "descending";
+        sortObject.direction = "descending";
+      } else {
+        this.arrowDirection[columnProperty] = "ascending";
+        sortObject.direction = "ascending";
+      }
+
+      this.columnSortDirection.push(sortObject);
+    },
+    getSortByProperty(columnProperty) {
+      return this.columnSortDirection.find(
+        (csd) => csd.property === columnProperty
+      );
+    },
+    showGroupHeader(group) {
+      const anyRowsInRange =
+        this.indexInPagedRows(group.startIndex) ||
+        this.indexInPagedRows(group.endIndex - 1);
+      const hasRows = group.startIndex < group.endIndex;
+      return group.displayHeader && anyRowsInRange && hasRows;
+    },
+    indexInPagedRows(index) {
+      if (!this.rowsPerPage) return true;
+      return index >= this.startIndex && index < this.endIndex;
+    },
+    getCellValue(row, column) {
+      return get(row, column.property, column.defaultValue);
     },
     generateHeaderClasses(header, index) {
       let classes = camelCase(header);
@@ -538,14 +525,6 @@ export default {
       classes += " " + camelCase("header " + header);
       classes += index % 2 === 0 ? " evenColumn" : " oddColumn";
       if (this.fixedHeader) classes += " fixedHeader";
-      return classes;
-    },
-    generateCellClasses(column, cindex, rindex) {
-      let classes = "row ";
-      classes += " cellPadding ";
-      classes += camelCase(column.property);
-      classes += cindex % 2 === 0 ? " evenColumn" : " oddColumn";
-      classes += rindex % 2 === 0 ? " evenRow" : " oddRow";
       return classes;
     },
     generateSlotName(prefix, value) {
@@ -675,6 +654,10 @@ export default {
         }
         lastSortableColumn = column;
       });
+    },
+    closeAllDetailRows() {
+      if (this.onlyShowOneDetailRow)
+        this.closeDetailRowsToggle = !this.closeDetailRowsToggle;
     },
   },
 };

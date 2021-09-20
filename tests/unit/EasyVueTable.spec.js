@@ -1,6 +1,6 @@
 import "regenerator-runtime/runtime";
 import EasyVueTable from "@/EasyVueTable.vue";
-import { mount } from "@vue/test-utils";
+import { createLocalVue, mount } from "@vue/test-utils";
 
 const columns = [
   {
@@ -230,13 +230,21 @@ describe("EasyVueTable.vue", () => {
     expect(wrapper.text()).toContain("Heading cell Test");
   });
 
-  it("Group heading content is replacable with slots", () => {
+  it("Group heading content is replacable with slots", async () => {
+    const localVue = createLocalVue();
+
     const wrapper = mount(EasyVueTable, {
       propsData: { columns, rows, groups },
       scopedSlots: {
-        groupHeader: '<p slot-scope="groupHeader">Group Heading Test</p>',
+        groupHeader: `
+          <template v-slot:groupHeader="group">
+            <span style="font-weight: bold">Group Heading Test</span>
+          </template>
+        `,
       },
+      localVue,
     });
+    await localVue.nextTick();
     expect(wrapper.text()).toContain("Group Heading Test");
   });
 
