@@ -77,7 +77,7 @@
             class="spanAllColumns groupHeader row"
             v-if="showGroupHeader(group)"
           >
-            <slot name="groupHeader" v-bind="group">
+            <slot name="groupHeader" v-bind="group.originalGroup">
               {{ group.header }}
             </slot>
           </div>
@@ -479,6 +479,7 @@ export default {
             filteredStartIndex: startIndex,
             endIndex: groupedRows.length,
             filteredEndIndex: groupedRows.length,
+            originalGroup: group,
           };
           this.internalGroups.push(newGroup);
           startIndex = groupedRows.length;
