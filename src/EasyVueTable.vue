@@ -85,36 +85,72 @@
           <!-- Rows -->
           <div
             v-for="(row, rindex) in displayRows.slice(
-              Math.max(group.startIndex - startIndex, 0),
-              Math.max(group.endIndex - startIndex, 0)
+              Math.max(group.filteredStartIndex - startIndex, 0),
+              Math.max(group.filteredEndIndex - startIndex, 0)
             )"
-            :key="rindex"
+            :key="rindex + row.toString()"
             class="makeGridIgnoreDiv row"
           >
-            <ExpandableRow
-              class="makeGridIgnoreDiv"
-              :columns="columns"
-              :row="row"
-              :internalSelectedItem.sync="internalSelectedItem"
-              :internalSelectedItems.sync="internalSelectedItems"
-              :enableDetailRowAccordian="enableDetailRowAccordian"
-              :enableRadioButtons="enableRadioButtons"
-              :enableCheckBoxes="enableCheckBoxes"
-              :gindex="gindex"
-              :rindex="rindex"
-              :generateSlotName="generateSlotName"
-              :getCellValue="getCellValue"
-              :closeDetailRowsToggle="closeDetailRowsToggle"
-              @detailRowOpened="closeAllDetailRows"
+            <!-- Expand/Collapse controls for the details row -->
+            <div v-if="enableDetailRowAccordian">
+              <div v-if="row.detailRowOpen" @click="collapseRow(row)">
+                <slot name="expandedDetailRowIcon">
+                  <font-awesome-icon
+                    icon="angle-down"
+                    :ref="'angleDown_' + rindex"
+                  />
+                </slot>
+              </div>
+              <div v-else @click="expandRow(row)">
+                <slot name="collapsedDetailRowIcon">
+                  <font-awesome-icon
+                    icon="angle-right"
+                    :ref="'angleRight_' + rindex"
+                  />
+                </slot>
+              </div>
+            </div>
+
+            <!-- Radio buttons -->
+            <input
+              v-if="enableRadioButtons"
+              type="radio"
+              :id="rindex"
+              :value="row.originalRow"
+              v-model="internalSelectedItem"
+              :ref="'radio_' + rindex"
+            />
+
+            <!-- Check boxes -->
+            <input
+              v-if="enableCheckBoxes"
+              type="checkbox"
+              :id="rindex"
+              :value="row.originalRow"
+              v-model="internalSelectedItems"
+              :ref="'check_' + rindex"
+            />
+
+            <!-- Columns for the row -->
+            <div
+              v-for="(column, cindex) in columns"
+              :key="column.property + cindex"
+              :class="generateCellClasses(column, cindex, rindex)"
+              :ref="'rowCell_' + gindex + '_' + rindex + '_' + cindex"
             >
-              <template v-slot:expandedDetailRowIcon>
-                <slot name="expandedDetailRowIcon" v-bind="row" />
-              </template>
-              <template v-slot:collapsedDetailRowIcon>
-                <slot name="collapsedDetailRowIcon" v-bind="row" />
-              </template>
-              <slot name="detailRowSlot" v-bind="row" />
-            </ExpandableRow>
+              <slot :name="column.property" v-bind="row.originalRow">
+                {{ getCellValue(row, column) }}
+              </slot>
+            </div>
+
+            <!-- Detail row -->
+            <div
+              class="spanAllColumns"
+              :key="'detailRow' + rindex"
+              v-if="!enableDetailRowAccordian || row.detailRowOpen"
+            >
+              <slot name="detailRowSlot" v-bind="row.originalRow" />
+            </div>
           </div>
         </div>
       </div>
@@ -197,7 +233,6 @@ import {
 } from "lodash";
 import Pages from "./Pages.vue";
 import Search from "./SearchInput.vue";
-import ExpandableRow from "./ExpandableRow.vue";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
   faArrowUp,
@@ -214,7 +249,7 @@ library.add(faAngleRight);
 
 export default {
   name: "EasyVueTable",
-  components: { FontAwesomeIcon, Pages, Search, ExpandableRow },
+  components: { FontAwesomeIcon, Pages, Search },
   props: {
     columns: { type: Array, required: true },
     rows: { type: Array, required: true },
@@ -266,12 +301,11 @@ export default {
       internalSelectedItem: null,
       internalSelectedItems: [],
       internalGroups: [],
-      totalRows: 0,
-      openDetailRows: [],
+      internalRows: [],
       searchTerm: "",
+      totalRows: 0,
       startIndex: 0,
       endIndex: 0,
-      closeDetailRowsToggle: false,
     };
   },
   created() {
@@ -306,11 +340,32 @@ export default {
     // Handle checkboxes setup
     if (this.selectedItems) {
       const filteredSelected = intersection(this.selectedItems, this.rows);
-
       this.internalSelectedItems = this.internalSelectedItems.concat(
         filteredSelected
       );
     }
+
+    // Handle internal rows setup
+    let groupedRows = this.groupRows(this.rows);
+
+    // The detail rows with accordian controls get really hinky
+    // given that 1) the *original* object needs to be preserved
+    // so users can "===" on them and it works as expected for the
+    // selectedItem and selectedItems. 2) The table supports having
+    // multiple copies of the same object in different locations. 3)
+    // filtering changes the index of objects in the visible rows.
+    // Because of 1 and 2 the object can't be used to determine if
+    // a detail row is open while 2 and 3 make using indexs challening.
+    // So instead, each row will be its own object, with the state of
+    // the detail row and a reference to the original object. Makes
+    // the rest of the code a bit more convoluted, but that is the
+    // least bad option.
+    this.internalRows = groupedRows.map((row) => {
+      return {
+        originalRow: row,
+        detailRowOpen: !this.enableDetailRowAccordian,
+      };
+    });
   },
   watch: {
     internalSelectedItem() {
@@ -363,10 +418,10 @@ export default {
         // even if only some rows are checked. Life is messy, when rows are filtered
         // by a search term just add the rows that pass the filter to the selected rows.
         const filteredRows = this.filterRowsBySearchValue(
-          this.rows,
+          this.internalRows,
           this.searchTerm,
           this.enableSearchFilter
-        );
+        ).map((row) => row.originalRow);
         if (checked) {
           this.internalSelectedItems = this.internalSelectedItems.concat(
             filteredRows
@@ -391,34 +446,17 @@ export default {
       );
     },
     displayRows() {
-      let rows = clone(this.rows);
-      rows = this.filterRowsBySearchValue(
-        rows,
+      let rows = this.filterRowsBySearchValue(
+        this.internalRows,
         this.searchTerm,
         this.enableSearchFilter
       );
-      rows = this.groupRows(rows);
       rows = this.sortRows(rows);
       rows = this.pageRows(rows);
       return rows;
     },
   },
   methods: {
-    filterRowsBySearchValue(rows, searchTerm, enableSearchFilter) {
-      let filteredRows = rows;
-      if (searchTerm && enableSearchFilter) {
-        filteredRows = filteredRows.filter((row) => {
-          // Note: stringifyRow only includes visible fields
-          // That way searching for say "12" doesn't incorrectly
-          // also include rows that have a non-visible ID field
-          // that happens to include "12"
-          return this.stringifyRow(row)
-            .toLowerCase()
-            .includes(searchTerm.toLowerCase());
-        });
-      }
-      return filteredRows;
-    },
     groupRows(rows) {
       this.internalGroups = [];
       let groupedRows = [];
@@ -436,31 +474,75 @@ export default {
 
           const newGroup = {
             header: group.header,
-            startIndex: startIndex,
-            endIndex: groupedRows.length,
             displayHeader: true,
+            startIndex: startIndex,
+            filteredStartIndex: startIndex,
+            endIndex: groupedRows.length,
+            filteredEndIndex: groupedRows.length,
           };
           this.internalGroups.push(newGroup);
           startIndex = groupedRows.length;
         });
       } else {
         this.internalGroups.push({
-          startIndex: 0,
-          endIndex: rows.length,
           displayHeader: false,
+          startIndex: 0,
+          filteredStartIndex: 0,
+          endIndex: rows.length,
+          filteredEndIndex: rows.length,
         });
         groupedRows = clone(rows);
       }
       this.totalRows = groupedRows.length;
       return groupedRows;
     },
+    filterRowsBySearchValue(rows, searchTerm, enableSearchFilter) {
+      if (searchTerm && enableSearchFilter) {
+        let filteredRows = [];
+        let filteredStartIndex = 0;
+        this.internalGroups.forEach((group) => {
+          const rowsInGroup = this.internalRows.slice(
+            group.startIndex,
+            group.endIndex
+          );
+          const filteredRowsInGroup = rowsInGroup.filter((row) => {
+            // Note: stringifyRow only includes visible fields
+            // That way searching for say "12" doesn't incorrectly
+            // also include rows that have a non-visible ID field
+            // that happens to include "12"
+            return this.stringifyRow(row)
+              .toLowerCase()
+              .includes(searchTerm.toLowerCase());
+          });
+          group.filteredStartIndex = filteredStartIndex;
+          group.filteredEndIndex =
+            filteredStartIndex + filteredRowsInGroup.length;
+          filteredStartIndex = filteredStartIndex + filteredRowsInGroup.length;
+          filteredRows = filteredRows.concat(filteredRowsInGroup);
+        });
+        this.totalRows = filteredRows.length;
+        return filteredRows;
+      }
+
+      this.internalGroups.forEach((group) => {
+        group.filteredStartIndex = group.startIndex;
+        group.filteredEndIndex = group.endIndex;
+      });
+      this.totalRows = rows.length;
+      return rows;
+    },
     sortRows(rows) {
       if (this.columnSortDirection.length > 0) {
         let sortedRows = [];
         this.internalGroups.forEach((group) => {
-          let rowsInGroup = rows.slice(group.startIndex, group.endIndex);
+          let rowsInGroup = rows.slice(
+            group.filteredStartIndex,
+            group.filteredEndIndex
+          );
           this.columnSortDirection.forEach((sortableColumn) => {
-            rowsInGroup = sortBy(rowsInGroup, [sortableColumn.property]);
+            rowsInGroup = sortBy(rowsInGroup, [
+              "originalRow." + sortableColumn.property,
+            ]);
             if (sortableColumn.direction === "descending")
               rowsInGroup = reverse(rowsInGroup);
           });
@@ -507,9 +589,9 @@ export default {
     },
     showGroupHeader(group) {
       const anyRowsInRange =
-        this.indexInPagedRows(group.startIndex) ||
-        this.indexInPagedRows(group.endIndex - 1);
-      const hasRows = group.startIndex < group.endIndex;
+        this.indexInPagedRows(group.filteredStartIndex) ||
+        this.indexInPagedRows(group.filteredEndIndex - 1);
+      const hasRows = group.filteredStartIndex < group.filteredEndIndex;
       return group.displayHeader && anyRowsInRange && hasRows;
     },
     indexInPagedRows(index) {
@@ -517,7 +599,7 @@ export default {
       return index >= this.startIndex && index < this.endIndex;
     },
     getCellValue(row, column) {
-      return get(row, column.property, column.defaultValue);
+      return get(row.originalRow, column.property, column.defaultValue);
     },
     generateHeaderClasses(header, index) {
       let classes = camelCase(header);
@@ -655,9 +737,26 @@ export default {
         lastSortableColumn = column;
       });
     },
-    closeAllDetailRows() {
-      if (this.onlyShowOneDetailRow)
-        this.closeDetailRowsToggle = !this.closeDetailRowsToggle;
+    expandRow(row) {
+      if (this.onlyShowOneDetailRow) {
+        this.internalRows.forEach((row) => (row.detailRowOpen = false));
+      }
+      row.detailRowOpen = true;
+      const index = this.internalRows.indexOf(row);
+      this.$set(this.internalRows, index, row);
+    },
+    collapseRow(row) {
+      row.detailRowOpen = false;
+      const index = this.internalRows.indexOf(row);
+      this.$set(this.internalRows, index, row);
+    },
+    generateCellClasses(column, cindex, rindex) {
+      let classes = "row ";
+      classes += " cellPadding ";
+      classes += camelCase(column.property);
+      classes += cindex % 2 === 0 ? " evenColumn" : " oddColumn";
+      classes += rindex % 2 === 0 ? " evenRow" : " oddRow";
+      return classes;
     },
   },
 };

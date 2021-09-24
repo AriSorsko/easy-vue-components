@@ -11,7 +11,7 @@
       :onlyShowOneDetailRow="true"
       :columns="columns"
       :rows="teams"
-      :rowsPerPage="15"
+      :rowsPerPage="16"
       :highlightOptions="highlightOptions"
     >
       <!-- 
@@ -313,8 +313,8 @@ export default {
         },
         {
           name: "Slugs",
-          wins: 0,
-          losses: 24,
+          wins: 23,
+          losses: 1,
           players: [
             {
               name: "Jay",
@@ -422,8 +422,8 @@ export default {
         },
         {
           name: "Bulldogs",
-          wins: 6,
-          losses: 8,
+          wins: 22,
+          losses: 2,
           players: [
             {
               name: "Cadee",
@@ -459,8 +459,8 @@ export default {
         },
         {
           name: "Dolphins",
-          wins: 11,
-          losses: 13,
+          wins: 20,
+          losses: 4,
           players: [
             {
               name: "Dagen",
