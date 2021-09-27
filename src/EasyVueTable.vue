@@ -186,6 +186,7 @@
 
 #tableContainer {
   display: grid;
+  margin: 5px;
 }
 
 .spanAllColumns {
@@ -200,10 +201,14 @@
 
 .headerCell {
   font-weight: bold;
+  font-size: 1.2em;
 }
 
-.groupHeader {
+.row.groupHeader {
   text-align: left;
+  font-size: 1.1em;
+  background-color: rgb(250, 250, 250);
+  padding-left: 6px;
 }
 
 .searchInput {
@@ -216,6 +221,10 @@ highlighting a row on hover etc. */
   padding-left: 2px;
   padding-right: 2px;
 }
+
+.row {
+  padding: 2px 0;
+}
 </style>
 
 <script>
@@ -225,7 +234,6 @@ import {
   difference,
   get,
   intersection,
-  isEmpty,
   reverse,
   sortBy,
   uniq,
@@ -306,15 +314,12 @@ export default {
       totalRows: 0,
       startIndex: 0,
       endIndex: 0,
-      numberOfUniqueRows: 0,
     };
   },
   created() {
     // Error checking
     let validProps = this.errorPropValidations();
     if (!validProps) return;
-    this.warningPropValidations();
-
     if (!this.rows) return;
 
     // Handle sorting setup
@@ -331,20 +336,6 @@ export default {
       this.arrowDirection[sortableColumn.property] =
         sortableColumn.sort.direction;
     });
-
-    // Handle radio buttons setup
-    if (this.selectedItem) {
-      if (this.rows.includes(this.selectedItem))
-        this.internalSelectedItem = this.selectedItem;
-    }
-
-    // Handle checkboxes setup
-    if (this.selectedItems) {
-      const filteredSelected = intersection(this.selectedItems, this.rows);
-      this.internalSelectedItems = this.internalSelectedItems.concat(
-        filteredSelected
-      );
-    }
 
     // Handle internal rows setup
     let groupedRows = this.groupRows(this.rows);
@@ -368,9 +359,27 @@ export default {
       };
     });
 
-    this.numberOfUniqueRows = uniq(
-      this.internalRows.map((row) => row.originalRow)
-    ).length;
+    // Handle radio buttons setup
+    if (this.selectedItem) {
+      if (this.internalRows.find((r) => r.originalRow === this.selectedItem))
+        this.internalSelectedItem = this.selectedItem;
+      else {
+        console.warn(
+          "The 'selectedItem' prop is not one of the objects in the rows: ",
+          this.selectedItem
+        );
+      }
+    }
+
+    // Handle checkboxes setup
+    if (this.selectedItems) {
+      this.internalSelectedItems = intersection(
+        this.selectedItems,
+        this.uniqueOriginalRows
+      );
+    }
+
+    this.warningPropValidations();
   },
   watch: {
     internalSelectedItem() {
@@ -414,7 +423,9 @@ export default {
     },
     allChecked: {
       get() {
-        return this.internalSelectedItems.length === this.rows.length;
+        return (
+          this.internalSelectedItems.length === this.uniqueOriginalRows.length
+        );
       },
       set(checked) {
         // it is a bit confusing to "check all" and only have some items be checked,
@@ -448,7 +459,7 @@ export default {
     someChecked() {
       return (
         this.internalSelectedItems.length > 0 &&
-        this.internalSelectedItems.length < this.numberOfUniqueRows
+        this.internalSelectedItems.length < this.uniqueOriginalRows.length
       );
     },
     displayRows() {
@@ -460,6 +471,9 @@ export default {
       rows = this.sortRows(rows);
       rows = this.pageRows(rows);
       return rows;
+    },
+    uniqueOriginalRows() {
+      return uniq(this.internalRows.map((r) => r.originalRow));
     },
   },
   methods: {
@@ -727,30 +741,17 @@ export default {
         );
       }
 
-      if (this.rows && Array.isArray(this.rows)) {
-        // selectedItem
-        if (
-          this.selectedItem &&
-          !isEmpty(this.selectedItem) &&
-          !this.rows.find((r) => r === this.selectedItem)
-        ) {
+      // selected items
+      if (this.selectedItems) {
+        const selectedItemsNotInRows = difference(
+          this.selectedItems,
+          this.uniqueOriginalRows
+        );
+        if (selectedItemsNotInRows.length > 0) {
           console.warn(
-            "The 'selectedItem' prop is not one of the objects in the rows: ",
-            this.selectedItem
+            "These selected items are not in the rows: ",
+            selectedItemsNotInRows
           );
-        }
-        //selectedItems
-        if (this.selectedItems) {
-          const selectedItemsNotInRows = difference(
-            this.selectedItems,
-            this.rows
-          );
-          if (selectedItemsNotInRows.length > 0) {
-            console.warn(
-              "These selected items are not in the rows: ",
-              selectedItemsNotInRows
-            );
-          }
         }
       }
 

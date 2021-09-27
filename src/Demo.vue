@@ -348,8 +348,8 @@ export default {
         },
         {
           name: "Whales",
-          wins: 13,
-          losses: 11,
+          wins: 11,
+          losses: 13,
           players: [
             {
               name: "Baara",
@@ -824,9 +824,15 @@ export default {
     this.selectedItems.push(this.teams[11]);
     this.selectedItems.push(this.teams[12]);
     this.selectedItems.push(this.teams[13]);
-    // this.selectedItems.push(this.teams[14]);
-    // this.selectedItems.push(this.teams[15]);
     // this.selectedItems.push({ test: "test!!!" });
+
+    this.$nextTick(() => {
+      this.$nextTick(() => {
+        this.selectedItem = this.teams[1];
+        this.selectedItems.push(this.groups[1].rows[0]);
+        this.selectedItems.push(this.groups[1].rows[1]);
+      });
+    });
   },
 };
 </script>
