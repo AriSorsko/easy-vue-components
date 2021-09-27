@@ -27,9 +27,7 @@
       <template v-slot:noDataMessage>
         No Data here!
       </template> -->
-      <template v-slot:headerLosses>
-        :'(
-      </template>
+      <template v-slot:headerLosses="group"> {{ group.header }} :'( </template>
       <template v-slot:expandedDetailRowIcon>
         <font-awesome-icon icon="minus" />
       </template>
@@ -349,42 +347,6 @@ export default {
           },
         },
         {
-          name: "Lions",
-          wins: 12,
-          losses: 12,
-          players: [
-            {
-              name: "Aadi",
-              baskets: 99,
-              assists: 146,
-            },
-            {
-              name: "Aalam",
-              baskets: 146,
-              assists: 99,
-            },
-            {
-              name: "Aaliyah",
-              baskets: 99,
-              assists: 146,
-            },
-            {
-              name: "Aaralyn",
-              baskets: 88,
-              assists: 199,
-            },
-            {
-              name: "Aba",
-              baskets: 156,
-              assists: 147,
-            },
-          ],
-          details: {
-            school: "NYC High",
-            yearsPlayed: 2,
-          },
-        },
-        {
           name: "Whales",
           wins: 13,
           losses: 11,
@@ -678,43 +640,6 @@ export default {
           },
         },
         {
-          name: "Tigers",
-          wins: 12,
-          losses: 12,
-          players: [
-            {
-              name: "Ja",
-              baskets: 99,
-              assists: 146,
-            },
-            {
-              name: "Jacob",
-              baskets: 146,
-              assists: 99,
-            },
-            {
-              name: "Jaan",
-              baskets: 99,
-              assists: 146,
-            },
-            {
-              name: "Jadyn",
-              baskets: 88,
-              assists: 199,
-            },
-            {
-              name: "Jacquelle",
-              baskets: 156,
-              assists: 147,
-            },
-          ],
-          details: {
-            school: "DC High",
-            championships: 3,
-            yearsPlayed: 27,
-          },
-        },
-        {
           name: "Cheetahs",
           wins: 13,
           losses: 11,
@@ -793,9 +718,81 @@ export default {
         },
         {
           header: "Teams with a tied season",
-          filter: (team) => {
-            return team.wins === team.losses;
-          },
+          rows: [
+            {
+              name: "Lions",
+              wins: 12,
+              losses: 12,
+              players: [
+                {
+                  name: "Aadi",
+                  baskets: 99,
+                  assists: 146,
+                },
+                {
+                  name: "Aalam",
+                  baskets: 146,
+                  assists: 99,
+                },
+                {
+                  name: "Aaliyah",
+                  baskets: 99,
+                  assists: 146,
+                },
+                {
+                  name: "Aaralyn",
+                  baskets: 88,
+                  assists: 199,
+                },
+                {
+                  name: "Aba",
+                  baskets: 156,
+                  assists: 147,
+                },
+              ],
+              details: {
+                school: "NYC High",
+                yearsPlayed: 2,
+              },
+            },
+            {
+              name: "Tigers",
+              wins: 12,
+              losses: 12,
+              players: [
+                {
+                  name: "Ja",
+                  baskets: 99,
+                  assists: 146,
+                },
+                {
+                  name: "Jacob",
+                  baskets: 146,
+                  assists: 99,
+                },
+                {
+                  name: "Jaan",
+                  baskets: 99,
+                  assists: 146,
+                },
+                {
+                  name: "Jadyn",
+                  baskets: 88,
+                  assists: 199,
+                },
+                {
+                  name: "Jacquelle",
+                  baskets: 156,
+                  assists: 147,
+                },
+              ],
+              details: {
+                school: "DC High",
+                championships: 3,
+                yearsPlayed: 27,
+              },
+            },
+          ],
         },
         {
           header: "Teams with a losing season",
@@ -827,8 +824,8 @@ export default {
     this.selectedItems.push(this.teams[11]);
     this.selectedItems.push(this.teams[12]);
     this.selectedItems.push(this.teams[13]);
-    this.selectedItems.push(this.teams[14]);
-    this.selectedItems.push(this.teams[15]);
+    // this.selectedItems.push(this.teams[14]);
+    // this.selectedItems.push(this.teams[15]);
     // this.selectedItems.push({ test: "test!!!" });
   },
 };

@@ -1,5 +1,6 @@
 Support arrays in groups in addition to the filter functions
     Don't forget to update selectAll checkbox computed property total rows
+    Also the validation that requires rows prop
 Decent default css
 test all forms of installation (vue.use() and with script)
 Optional options for Columns:

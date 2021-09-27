@@ -1,6 +1,6 @@
 {
   "name": "easy-vue-table",
-  "version": "0.9.8",
+  "version": "0.9.9",
   "license": "MIT",
   "private": false,
   "main": "dist/EasyVueTable.umd.js",

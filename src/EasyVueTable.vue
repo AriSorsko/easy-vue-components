@@ -252,7 +252,7 @@ export default {
   components: { FontAwesomeIcon, Pages, Search },
   props: {
     columns: { type: Array, required: true },
-    rows: { type: Array, required: true },
+    rows: { type: Array },
     fixedHeader: {
       type: Boolean,
       default: false,
@@ -306,6 +306,7 @@ export default {
       totalRows: 0,
       startIndex: 0,
       endIndex: 0,
+      numberOfUniqueRows: 0,
     };
   },
   created() {
@@ -352,7 +353,7 @@ export default {
     // given that 1) the *original* object needs to be preserved
     // so users can "===" on them and it works as expected for the
     // selectedItem and selectedItems. 2) The table supports having
-    // multiple copies of the same object in different locations. 3)
+    // multiple copies of the same object in different groups. 3)
     // filtering changes the index of objects in the visible rows.
     // Because of 1 and 2 the object can't be used to determine if
     // a detail row is open while 2 and 3 make using indexs challening.
@@ -366,6 +367,10 @@ export default {
         detailRowOpen: !this.enableDetailRowAccordian,
       };
     });
+
+    this.numberOfUniqueRows = uniq(
+      this.internalRows.map((row) => row.originalRow)
+    ).length;
   },
   watch: {
     internalSelectedItem() {
@@ -422,6 +427,7 @@ export default {
           this.searchTerm,
           this.enableSearchFilter
         ).map((row) => row.originalRow);
+
         if (checked) {
           this.internalSelectedItems = this.internalSelectedItems.concat(
             filteredRows
@@ -442,7 +448,7 @@ export default {
     someChecked() {
       return (
         this.internalSelectedItems.length > 0 &&
-        this.internalSelectedItems.length < this.rows.length
+        this.internalSelectedItems.length < this.numberOfUniqueRows
       );
     },
     displayRows() {
@@ -645,9 +651,69 @@ export default {
         return false;
       }
 
+      // rows and groups
+      if (!this.rows) {
+        if (!this.groups) {
+          console.error(
+            "The rows prop or groups with rows properties are required"
+          );
+          return false;
+        }
+        const rowsInGroups = this.groups.map((group) => group.rows);
+        if (!rowsInGroups) {
+          console.error(
+            "The rows prop or groups with rows properties are required"
+          );
+          return false;
+        }
+
+        const groupFilters = this.groups.map((group) => group.filter);
+        if (groupFilters.length > 0) {
+          console.error("Groups with filter properties require the row prop.");
+          return false;
+        }
+      }
+      if (this.groups) {
+        // Filter property on groups needs to be an function
+        const groupsWithBadFilters = this.groups
+          .filter((group) => group.filter && typeof group.filter !== "function")
+          .map((g) => g.header);
+        if (groupsWithBadFilters.length > 0) {
+          console.error(
+            "The filter property in group objects must be a function, these groups have non-function filters: " +
+              groupsWithBadFilters
+          );
+          return false;
+        }
+
+        // Rows property on groups needs to be an Array
+        const groupsWithBadRows = this.groups
+          .filter((group) => group.rows && !Array.isArray(group.rows))
+          .map((g) => g.header);
+        if (groupsWithBadRows.length > 0) {
+          console.error(
+            "The rows property in group objects must be an Array, these groups have non-array rows: " +
+              groupsWithBadRows
+          );
+          return false;
+        }
+
+        // Groups require either rows or filter property
+        const groupsWithNoRowsOrFilters = this.groups
+          .filter((group) => !group.rows && !group.filter)
+          .map((g) => g.header);
+        if (groupsWithNoRowsOrFilters.length > 0) {
+          console.error(
+            "Every group must have either a 'rows' property or a 'filter' property, these groups have nither: " +
+              groupsWithNoRowsOrFilters
+          );
+          return false;
+        }
+      }
+
       // Rows Per Page
       if (this.rowsPerPage < 1) {
-        console.error("The 'rowsPerPage' prop should be greater than 0");
+        console.error("The 'rowsPerPage' prop must be greater than 0");
         return false;
       }
       return true;
@@ -661,7 +727,7 @@ export default {
         );
       }
 
-      if (this.rows && typeof Array.isArray(this.rows)) {
+      if (this.rows && Array.isArray(this.rows)) {
         // selectedItem
         if (
           this.selectedItem &&
