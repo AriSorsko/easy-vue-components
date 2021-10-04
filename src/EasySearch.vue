@@ -10,9 +10,9 @@
       <input
         v-model="tableSearch"
         placeholder="Search"
-        class="searchInput"
-        id="searchInput"
-        ref="searchInput"
+        class="easySearch"
+        id="easySearch"
+        ref="easySearch"
       />
     </div>
   </div>
@@ -32,12 +32,12 @@
   padding-left: 4px;
   padding-right: 4px;
 }
-.searchInput {
+.easySearch {
   display: block;
   border: none;
   background-color: transparent;
 }
-.searchInput:focus {
+.easySearch:focus {
   outline: none;
   background-color: transparent;
 }

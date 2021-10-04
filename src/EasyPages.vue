@@ -64,7 +64,7 @@ library.add(faAngleDoubleLeft);
 library.add(faAngleDoubleRight);
 
 export default {
-  name: "Pages",
+  name: "EasyPages",
   components: { FontAwesomeIcon },
   // TODO: Prop validation
   props: {

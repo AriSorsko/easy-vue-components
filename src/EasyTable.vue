@@ -1,11 +1,11 @@
 <template>
   <div>
     <Search
-      v-if="showTableSearchInput"
+      v-if="showTableEasySearch"
       :searchTerm.sync="searchTerm"
       :highlightQuerySelector="enableSearchHighlight ? '#tableContainer' : null"
       :highlightOptions="highlightOptions"
-      ref="searchInput"
+      ref="easySearch"
     />
 
     <div id="tableContainer" :style="columnWidthsStyle" ref="tableContainer">
@@ -156,7 +156,7 @@
       </div>
     </div>
 
-    <Pages
+    <EasyPages
       v-if="enablePaging"
       id="pagingControls"
       class="pagingControls"
@@ -211,7 +211,7 @@
   padding-left: 6px;
 }
 
-.searchInput {
+.easySearch {
   display: block;
 }
 
@@ -239,8 +239,8 @@ import {
   uniq,
   pull,
 } from "lodash";
-import Pages from "./Pages.vue";
-import Search from "./SearchInput.vue";
+import EasyPages from "./EasyPages.vue";
+import Search from "./EasySearch.vue";
 import { library } from "@fortawesome/fontawesome-svg-core";
 import {
   faArrowUp,
@@ -256,8 +256,8 @@ library.add(faAngleDown);
 library.add(faAngleRight);
 
 export default {
-  name: "EasyVueTable",
-  components: { FontAwesomeIcon, Pages, Search },
+  name: "EasyTable",
+  components: { FontAwesomeIcon, EasyPages, Search },
   props: {
     columns: { type: Array, required: true },
     rows: { type: Array },
@@ -283,7 +283,7 @@ export default {
     },
     rowsPerPage: Number,
     groups: Array,
-    showTableSearchInput: {
+    showTableEasySearch: {
       type: Boolean,
       default: false,
     },
@@ -757,7 +757,7 @@ export default {
 
       // searching
       if (
-        this.showTableSearchInput &&
+        this.showTableEasySearch &&
         !this.enableSearchFilter &&
         !this.enableSearchHighlight
       ) {

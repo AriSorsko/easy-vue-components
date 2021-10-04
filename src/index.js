@@ -1,5 +1,5 @@
-import EasyVueTable from "./EasyVueTable.vue";
-import Pages from "./Pages.vue";
-import SearchInput from "./SearchInput.vue";
+import EasyTable from "./EasyTable.vue";
+import EasyPages from "./EasyPages.vue";
+import EasySearch from "./EasySearch.vue";
 
-export { EasyVueTable, Pages, SearchInput };
+export { EasyTable, EasyPages, EasySearch };

@@ -1,13 +1,13 @@
 import "regenerator-runtime/runtime";
-import Pages from "@/Pages.vue";
+import EasyPages from "@/EasyPages.vue";
 import { mount } from "@vue/test-utils";
 
 const items = [0, 1, 2, 3, 4, 5];
 const itemsPerPage = 4;
 
-describe("Pages.vue", () => {
+describe("EasyPages.vue", () => {
   it("renders the icons and input", () => {
-    const wrapper = mount(Pages, {
+    const wrapper = mount(EasyPages, {
       propsData: {
         numberOfitems: items.length,
         itemsPerPage,
@@ -28,7 +28,7 @@ describe("Pages.vue", () => {
   });
 
   it("left and right icons decrement/increment page as appropriate", () => {
-    const wrapper = mount(Pages, {
+    const wrapper = mount(EasyPages, {
       propsData: {
         numberOfitems: items.length,
         itemsPerPage,
@@ -49,7 +49,7 @@ describe("Pages.vue", () => {
   });
 
   it("left and right icons decrement/increment page as appropriate", async () => {
-    const wrapper = mount(Pages, {
+    const wrapper = mount(EasyPages, {
       propsData: {
         numberOfitems: items.length,
         itemsPerPage,
@@ -76,7 +76,7 @@ describe("Pages.vue", () => {
   });
 
   it("Double left and double right icons go to the first and last pages", async () => {
-    const wrapper = mount(Pages, {
+    const wrapper = mount(EasyPages, {
       propsData: {
         numberOfitems: items.length,
         itemsPerPage,
@@ -96,7 +96,7 @@ describe("Pages.vue", () => {
   });
 
   it("Page input accepts valid values", async () => {
-    const wrapper = mount(Pages, {
+    const wrapper = mount(EasyPages, {
       propsData: {
         numberOfitems: items.length,
         itemsPerPage,
@@ -115,7 +115,7 @@ describe("Pages.vue", () => {
   });
 
   it("Page input does not accept invalid values", async () => {
-    const wrapper = mount(Pages, {
+    const wrapper = mount(EasyPages, {
       propsData: {
         numberOfitems: items.length,
         itemsPerPage,

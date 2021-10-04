@@ -7,7 +7,7 @@ export default [
     input: "src/index.js",
     output: {
       format: "esm",
-      file: "dist/EasyVueTable.esm.js",
+      file: "dist/EasyTable.esm.js",
     },
     plugins: [commonjs(), vue(), buble()],
     external: [
@@ -22,7 +22,7 @@ export default [
     input: "src/index.js",
     output: {
       format: "cjs",
-      file: "dist/EasyVueTable.ssr.js",
+      file: "dist/EasyTable.ssr.js",
     },
     plugins: [commonjs(), vue({ template: { optimizeSSR: true } }), buble()],
     external: [
@@ -37,8 +37,8 @@ export default [
     input: "src/wrapper.js",
     output: {
       format: "iife",
-      file: "dist/EasyVueTable.js",
-      name: "EasyVueTable",
+      file: "dist/EasyTable.js",
+      name: "EasyTable",
       globals: {
         lodash: "lodash",
         "@fortawesome/fontawesome-svg-core": "fontawesomeSvgCore",
@@ -58,8 +58,8 @@ export default [
     input: "src/wrapper.js",
     output: {
       format: "umd",
-      file: "dist/EasyVueTable.umd.js",
-      name: "EasyVueTable",
+      file: "dist/EasyTable.umd.js",
+      name: "EasyTable",
       globals: {
         lodash: "lodash",
         "@fortawesome/fontawesome-svg-core": "fontawesomeSvgCore",

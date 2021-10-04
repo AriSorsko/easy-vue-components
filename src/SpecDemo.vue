@@ -1,6 +1,6 @@
 <template>
   <div>
-    <EasyVueTable
+    <EasyTable
       id="playersTable"
       :columns="columns"
       :rows="rows"
@@ -9,19 +9,19 @@
       <template v-slot:groupHeader>
         <span style="font-weight: bold">testing</span>
       </template>
-    </EasyVueTable>
+    </EasyTable>
   </div>
 </template>
 
 <style scoped></style>
 
 <script>
-import EasyVueTable from "./EasyVueTable";
+import EasyTable from "./EasyTable";
 
 export default {
   name: "SpecDemo",
   components: {
-    EasyVueTable,
+    EasyTable,
   },
   data() {
     return {

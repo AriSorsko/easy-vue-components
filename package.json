@@ -3,11 +3,11 @@
   "version": "0.9.9",
   "license": "MIT",
   "private": false,
-  "main": "dist/EasyVueTable.umd.js",
-  "module": "dist/EasyVueTable.esm.js",
-  "unpkg": "dist/EasyVueTable.min.js",
+  "main": "dist/EasyTable.umd.js",
+  "module": "dist/EasyTable.esm.js",
+  "unpkg": "dist/EasyTable.min.js",
   "browser": {
-    "./sfc": "src/EasyVueTable.vue"
+    "./sfc": "src/EasyTable.vue"
   },
   "scripts": {
     "serve": "vue-cli-service serve",

@@ -1,11 +1,11 @@
 // Import vue component
-import EasyVueTable from "./EasyVueTable.vue";
+import EasyTable from "./EasyTable.vue";
 
 // Declare install function executed by Vue.use()
 export function install(Vue) {
   if (install.installed) return;
   install.installed = true;
-  Vue.component("EasyVueTable", EasyVueTable);
+  Vue.component("EasyTable", EasyTable);
 }
 
 // Create module definition for Vue.use()
@@ -24,5 +24,5 @@ if (GlobalVue) {
   GlobalVue.use(plugin);
 }
 
-// To allow use as module (npm/webpack/etc.) export EasyVueTable
-export default EasyVueTable;
+// To allow use as module (npm/webpack/etc.) export EasyTable
+export default EasyTable;
