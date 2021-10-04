@@ -5,7 +5,6 @@ Optional options for Columns:
     classes function- pass whole row, demo interest rate + loan amount > total monthly expense is an Error
     classes string
     excludeFromSearch- also add this to the mark.js exclude options
-enableRadioButtons and enableCheckBoxes should be their own props
 Documentation
 
 

@@ -5,14 +5,16 @@
       :showTableEasySearch="true"
       :groups="groups"
       :fixedHeader="true"
-      :selectedItem.sync="selectedItem"
-      :selectedItems.sync="selectedItems"
       :enableDetailRowAccordian="true"
       :onlyShowOneDetailRow="true"
       :columns="columns"
       :rows="teams"
       :rowsPerPage="16"
       :highlightOptions="highlightOptions"
+      :enableRadioButtons="true"
+      :selectedItem.sync="selectedItem"
+      :enableCheckBoxes="true"
+      :selectedItems.sync="selectedItems"
     >
       <!-- 
       :enableSearchFilter="false"

@@ -265,9 +265,17 @@ export default {
       type: Boolean,
       default: false,
     },
+    enableRadioButtons: {
+      type: Boolean,
+      defaut: false,
+    },
     selectedItem: {
       type: Object,
       default: null,
+    },
+    enableCheckBoxes: {
+      type: Boolean,
+      defaut: false,
     },
     selectedItems: {
       type: Array,
@@ -384,20 +392,16 @@ export default {
   watch: {
     internalSelectedItem() {
       this.$emit("update:selectedItem", this.internalSelectedItem);
+      this.$emit("selectedItemChanged", this.internalSelectedItem);
     },
     internalSelectedItems() {
       this.$emit("update:selectedItems", this.internalSelectedItems);
+      this.$emit("selectedItemsChanged", this.internalSelectedItems);
     },
   },
   computed: {
     enablePaging() {
       return !!this.rowsPerPage;
-    },
-    enableRadioButtons() {
-      return !!this.selectedItem;
-    },
-    enableCheckBoxes() {
-      return !!this.selectedItems;
     },
     columnWidthsStyle() {
       if (Array.isArray(this.columns)) {
@@ -733,11 +737,23 @@ export default {
       return true;
     },
     warningPropValidations() {
+      // radio buttons
+      if (this.selectedItem && !this.enableRadioButtons) {
+        console.warn(
+          "The 'selectedItem' prop is only valid when the 'enableRadioButtons' prop is true"
+        );
+      }
+
+      if (this.selectedItems && !this.enableCheckBoxes) {
+        console.warn(
+          "The 'selectedItems' prop is only valid when the 'enableCheckBoxes' prop is true"
+        );
+      }
+
       // enableDetailRowAccordian
       if (this.onlyShowOneDetailRow && !this.enableDetailRowAccordian) {
         console.warn(
-          "The 'onlyShowOneDetailRow' prop is only valid when the enableDetailRowAccordian is true",
-          this.enableDetailRowAccordian
+          "The 'onlyShowOneDetailRow' prop is only valid when the 'enableDetailRowAccordian' is true"
         );
       }
 
