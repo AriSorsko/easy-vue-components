@@ -340,6 +340,8 @@ export default {
       this.columnSortDirection.push({
         property: sortableColumn.property,
         direction: sortableColumn.sort.direction,
+        format: sortableColumn.format,
+        sortBy: sortableColumn.sortBy,
       });
       this.arrowDirection[sortableColumn.property] =
         sortableColumn.sort.direction;
@@ -566,7 +568,15 @@ export default {
           );
           this.columnSortDirection.forEach((sortableColumn) => {
             rowsInGroup = sortBy(rowsInGroup, [
-              "originalRow." + sortableColumn.property,
+              (row) => {
+                if (sortableColumn.sortBy) {
+                  return sortableColumn.sortBy(
+                    row.originalRow[sortableColumn.property],
+                    row.originalRow
+                  );
+                }
+                return this.getCellValue(row, sortableColumn);
+              },
             ]);
             if (sortableColumn.direction === "descending")
               rowsInGroup = reverse(rowsInGroup);
@@ -624,7 +634,14 @@ export default {
       return index >= this.startIndex && index < this.endIndex;
     },
     getCellValue(row, column) {
-      return get(row.originalRow, column.property, column.defaultValue);
+      const cellValue = get(
+        row.originalRow,
+        column.property,
+        column.defaultValue
+      );
+      return column.format
+        ? column.format(cellValue, row.originalRow)
+        : cellValue;
     },
     generateHeaderClasses(header, index) {
       let classes = camelCase(header);
@@ -668,6 +685,30 @@ export default {
         console.error("The 'property' field on all columns must be a string");
         return false;
       }
+      // cell format functions
+      this.columns.forEach((c) => {
+        if (c.format && typeof c.format !== "function") {
+          console.error(
+            "All column format properties must be functions, column '" +
+              c.property +
+              "' has a format function of type " +
+              typeof c.format
+          );
+          return false;
+        }
+      });
+      // cell sortBy functions
+      this.columns.forEach((c) => {
+        if (c.sortBy && typeof c.sortBy !== "function") {
+          console.error(
+            "All column sortBy properties must be functions, column '" +
+              c.property +
+              "' has a sortBy function of type " +
+              typeof c.sortBy
+          );
+          return false;
+        }
+      });
 
       // rows and groups
       if (!this.rows) {

@@ -170,6 +170,23 @@ export default {
           },
         },
         {
+          header: "Next Game",
+          property: "nextGame",
+          sort: {
+            priority: 3,
+            direction: "ascending",
+          },
+          format: (cell, team) => {
+            const nextGameTime = new Date(cell);
+            return nextGameTime.toDateString() + " vs " + team.nextGameOpponent;
+          },
+          // Override sorting by the result of the format function
+          // and instead sort by the original cell value
+          sortBy: (nextGameTime) => {
+            return nextGameTime;
+          },
+        },
+        {
           // header: "Edit",
           property: "edit",
         },
@@ -205,6 +222,8 @@ export default {
           name: "Panthers",
           wins: 6,
           losses: 18,
+          nextGame: 1633646969181,
+          nextGameOpponent: "Hornets",
           players: [
             {
               name: "Jay",
@@ -242,6 +261,8 @@ export default {
           name: "Bobcats",
           wins: 8,
           losses: 16,
+          nextGame: 1633586969181,
+          nextGameOpponent: "Panthers",
           players: [
             {
               name: "Jasper",
@@ -279,6 +300,8 @@ export default {
           name: "Unicorns",
           wins: 24,
           losses: 0,
+          nextGame: 1633476969181,
+          nextGameOpponent: "Bobcats",
           players: [
             {
               name: "Ben",
@@ -315,6 +338,8 @@ export default {
           name: "Slugs",
           wins: 23,
           losses: 1,
+          nextGame: 1633446969181,
+          nextGameOpponent: "Sharks",
           players: [
             {
               name: "Jay",
@@ -352,6 +377,8 @@ export default {
           name: "Whales",
           wins: 11,
           losses: 13,
+          nextGame: 1633446969181,
+          nextGameOpponent: "Elephants",
           players: [
             {
               name: "Baara",
@@ -388,6 +415,8 @@ export default {
           name: "Bulldogs",
           wins: 22,
           losses: 2,
+          nextGame: 1633446969181,
+          nextGameOpponent: "Snails",
           players: [
             {
               name: "Cadee",
@@ -425,6 +454,8 @@ export default {
           name: "Dolphins",
           wins: 20,
           losses: 4,
+          nextGame: 1633966979181,
+          nextGameOpponent: "Whales",
           players: [
             {
               name: "Dagen",
@@ -462,6 +493,8 @@ export default {
           name: "Eagles",
           wins: 16,
           losses: 8,
+          nextGame: 1633456989181,
+          nextGameOpponent: "Tigers",
           players: [
             {
               name: "Earl",
@@ -498,6 +531,8 @@ export default {
           name: "Sharks",
           wins: 8,
           losses: 16,
+          nextGame: 1633476999181,
+          nextGameOpponent: "Lions",
           players: [
             {
               name: "Faber",
@@ -535,6 +570,8 @@ export default {
           name: "Dragons",
           wins: 24,
           losses: 0,
+          nextGame: 1633447969181,
+          nextGameOpponent: "Cheetahs",
           players: [
             {
               name: "Gabby",
@@ -572,6 +609,8 @@ export default {
           name: "Snails",
           wins: 0,
           losses: 24,
+          nextGame: 1633448969181,
+          nextGameOpponent: "Dolphins",
           players: [
             {
               name: "Hadi",
@@ -609,6 +648,8 @@ export default {
           name: "Hornets",
           wins: 7,
           losses: 17,
+          nextGame: 1634449969181,
+          nextGameOpponent: "Unicorns",
           players: [
             {
               name: "Iago",
@@ -645,6 +686,8 @@ export default {
           name: "Cheetahs",
           wins: 13,
           losses: 11,
+          nextGame: 1634546969181,
+          nextGameOpponent: "Eagles",
           players: [
             {
               name: "Kaavia",
@@ -682,6 +725,8 @@ export default {
           name: "Elephants",
           wins: 11,
           losses: 13,
+          nextGame: 1633456969181,
+          nextGameOpponent: "Dragons",
           players: [
             {
               name: "Lacey",
@@ -725,6 +770,8 @@ export default {
               name: "Lions",
               wins: 12,
               losses: 12,
+              nextGame: 1633446969181,
+              nextGameOpponent: "Slugs",
               players: [
                 {
                   name: "Aadi",
@@ -761,6 +808,8 @@ export default {
               name: "Tigers",
               wins: 12,
               losses: 12,
+              nextGame: 1633446969181,
+              nextGameOpponent: "Bulldogs",
               players: [
                 {
                   name: "Ja",

@@ -27,6 +27,8 @@ const rows = [
     name: "Panthers",
     wins: 16,
     losses: 8,
+    nextGame: 1633646969181,
+    nextGameOpponent: "Unicorns",
     details: {
       city: "Charlotte",
     },
@@ -35,14 +37,18 @@ const rows = [
     name: "Bobcats",
     wins: 8,
     losses: 16,
+    nextGame: 1733646969181,
+    nextGameOpponent: "Panthers",
     details: {
       city: "San Francisco",
     },
   },
   {
     name: "Unicorns",
+    nextGameOpponent: "Bobcats",
     wins: 24,
     losses: 0,
+    nextGame: 1533646969181,
   },
 ];
 const groups = [
@@ -768,20 +774,46 @@ describe("EasyTable.vue", () => {
     expect(thirdCell.text()).toBe("-");
   });
 
-  it(`Nested properties display properly when there is no value or default value`, async () => {
-    const columnsWithNestedData = [
-      {
-        header: "City",
-        property: "details.city",
+  it(`Format functions format the data in a column's cells`, () => {
+    const columnsWithFormatFunction = {
+      header: "Next Game",
+      property: "nextGame",
+      format: (cell, team) => {
+        const nextGameTime = new Date(cell);
+        return nextGameTime.toDateString() + " vs " + team.nextGameOpponent;
       },
-    ];
-
+    };
     const wrapper = mount(EasyTable, {
-      propsData: { columns: columnsWithNestedData, rows },
+      propsData: { columns: [columnsWithFormatFunction], rows },
     });
 
-    // when there is no value, the defaultValue should display instead
-    const thirdCell = wrapper.findComponent({ ref: "rowCell_0_2_0" });
-    expect(thirdCell.text()).toBe("");
+    const firstCell = wrapper.findComponent({ ref: "rowCell_0_0_0" });
+    expect(firstCell.text()).toBe("Thu Oct 07 2021 vs Unicorns");
+  });
+
+  it("Columns with a sortBy function use that to sort instead of formatted cell data", () => {
+    const sortableColumns = [
+      {
+        header: "Next Game",
+        property: "nextGame",
+        sort: {
+          priority: 0,
+          direction: "ascending",
+        },
+        format: (cell) => {
+          const nextGameTime = new Date(cell);
+          return nextGameTime.toDateString();
+        },
+        sortBy: (nextGameTime) => {
+          return nextGameTime;
+        },
+      },
+    ];
+    const wrapper = mount(EasyTable, {
+      propsData: { columns: sortableColumns, rows },
+    });
+
+    const firstCell = wrapper.findComponent({ ref: "rowCell_0_0_0" });
+    expect(firstCell.text()).toBe("Tue Aug 07 2018");
   });
 });

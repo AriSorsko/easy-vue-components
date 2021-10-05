@@ -1,7 +1,5 @@
 test all forms of installation (vue.use() and with script)
 Optional options for Columns:
-    displayFunction (i.e. to convert timestamps in ms since epoch into dates)
-    custom sort function
     classes function- pass whole row, demo interest rate + loan amount > total monthly expense is an Error
     classes string
     excludeFromSearch- also add this to the mark.js exclude options
@@ -17,4 +15,6 @@ Partial data sets (i.e. loading page 0-20 of 5000)
 Export to CSV
 full row slot: demo inline  editing (for Documentation, use ISS astronauts as an example)
 drag and drop ->both within the table and to external target
-checkboxes at the group level in addition to the full table 
+checkboxes at the group level in addition to the full table
+Wrap around paging
+production mode that skips validation 
