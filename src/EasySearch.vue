@@ -51,7 +51,7 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 library.add(faSearch);
 
 export default {
-  name: "Search",
+  name: "EasySearch",
   components: { FontAwesomeIcon },
   props: {
     searchTerm: {
