@@ -58,15 +58,35 @@
 </template>
 
 <style scoped>
+#teamsTable {
+  border: 2px solid gray;
+}
+#teamsTable /deep/ .row {
+  border-bottom: 2px solid darkcyan;
+}
+#teamsTable /deep/ .name {
+  border-right: 2px solid darkgray;
+}
+
 #playersTable {
   position: relative;
   left: 2em;
   width: 400px;
 }
 
-/* #teamsTable /deep/ .row:hover div {
+#teamsTable /deep/ .teamName {
+  font-family: "Courier New", Courier, monospace;
+}
+#teamsTable /deep/ .nextGame {
+  background-color: lightgreen;
+}
+#teamsTable /deep/ .nextGame.lastGamePassed {
+  background-color: lightyellow;
+}
+
+#teamsTable /deep/ .row:hover div {
   background-color: lightgray;
-} */
+}
 
 /* #teamsTable /deep/ .headerName {
   font-style: italic;
@@ -143,6 +163,7 @@ export default {
             priority: 0,
             direction: "ascending",
           },
+          class: "teamName",
         },
         {
           header: "Wins",
@@ -185,6 +206,9 @@ export default {
           sortBy: (nextGameTime) => {
             return nextGameTime;
           },
+          classFunction: (team) => {
+            if (team.nextGame < Date.now()) return "lastGamePassed";
+          },
         },
         {
           // header: "Edit",
@@ -222,7 +246,7 @@ export default {
           name: "Panthers",
           wins: 6,
           losses: 18,
-          nextGame: 1633646969181,
+          nextGame: 1644646969181,
           nextGameOpponent: "Hornets",
           players: [
             {

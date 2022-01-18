@@ -135,7 +135,7 @@
             <div
               v-for="(column, cindex) in columns"
               :key="column.property + cindex"
-              :class="generateCellClasses(column, cindex, rindex)"
+              :class="generateCellClasses(column, cindex, rindex, row)"
               :ref="'rowCell_' + gindex + '_' + rindex + '_' + cindex"
             >
               <slot :name="column.property" v-bind="row.originalRow">
@@ -861,6 +861,9 @@ export default {
         }
         lastSortableColumn = column;
       });
+
+      // css classes
+      
     },
     expandRow(row) {
       if (this.onlyShowOneDetailRow) {
@@ -875,12 +878,17 @@ export default {
       const index = this.internalRows.indexOf(row);
       this.$set(this.internalRows, index, row);
     },
-    generateCellClasses(column, cindex, rindex) {
+    generateCellClasses(column, cindex, rindex, row) {
       let classes = "row ";
       classes += " cellPadding ";
       classes += camelCase(column.property);
       classes += cindex % 2 === 0 ? " evenColumn" : " oddColumn";
       classes += rindex % 2 === 0 ? " evenRow" : " oddRow";
+      if (column.classFunction) {
+        const calculatedClass = column.classFunction(row.originalRow);
+        classes += calculatedClass ? " " + calculatedClass : "";
+      }
+      if (column.class) classes += " " + column.class;
       return classes;
     },
   },

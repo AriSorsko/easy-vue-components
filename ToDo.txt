@@ -1,9 +1,14 @@
 test all forms of installation (vue.use() and with script)
 Optional options for Columns:
-    classes function- pass whole row, demo interest rate + loan amount > total monthly expense is an Error
-    classes string
     excludeFromSearch- also add this to the mark.js exclude options
 Documentation
+Vertically center by default?
+If a "Header" field is not provided in the column object, use the field name instead
+Add support for calculated Columns
+Add support for calculated rows
+Should no columns prop just show all columns? 
+groupable columns
+add column to cell format and class functions
 
 
 Post 1.0:
@@ -16,5 +21,9 @@ Export to CSV
 full row slot: demo inline  editing (for Documentation, use ISS astronauts as an example)
 drag and drop ->both within the table and to external target
 checkboxes at the group level in addition to the full table
-Wrap around paging
+Wrap around paging, i.e. going from page 57 (the last) to page 1 and vice versa
 production mode that skips validation 
+add debounce options to search
+collapsable groups
+
+Vue 3 fork? Support? 
