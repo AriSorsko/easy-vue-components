@@ -2,17 +2,17 @@
   <div>
     <div id="searchContainer" class="searchContainer">
       <font-awesome-icon
-        icon="search"
-        ref="searchIcon"
-        class="searchIcon"
         id="searchIcon"
+        ref="searchIcon"
+        icon="search"
+        class="searchIcon"
       />
       <input
+        id="easySearch"
+        ref="easySearch"
         v-model="tableSearch"
         placeholder="Search"
         class="easySearch"
-        id="easySearch"
-        ref="easySearch"
       />
     </div>
   </div>
@@ -58,6 +58,7 @@ export default {
       type: String,
       default: "",
     },
+    // eslint-disable-next-line vue/require-default-prop
     highlightQuerySelector: String,
     highlightOptions: {
       type: Object,

@@ -1,32 +1,37 @@
 <template>
   <div>
     <font-awesome-icon
-      icon="angle-double-left"
       ref="AngleDoubleLeft"
+      icon="angle-double-left"
       class="pagingIcon"
       :class="page === 1 ? 'disabled' : 'enabled'"
       @click="page = 1"
     />
     <font-awesome-icon
-      icon="angle-left"
       ref="AngleLeft"
+      icon="angle-left"
       class="pagingIcon"
       :class="page === 1 ? 'disabled' : 'enabled'"
       @click="page === 1 ? 1 : page--"
     />
 
-    <input v-model="page" class="pageInput" id="pageInput" ref="pageInput" />
+    <input
+      id="pageInput"
+      ref="pageInput"
+      v-model="page"
+      class="pageInput"
+    >
 
     <font-awesome-icon
-      icon="angle-right"
       ref="AngleRight"
+      icon="angle-right"
       class="pagingIcon"
       :class="page === lastPage ? 'disabled' : 'enabled'"
       @click="page === lastPage ? lastPage : page++"
     />
     <font-awesome-icon
-      icon="angle-double-right"
       ref="AngleDoubleRight"
+      icon="angle-double-right"
       class="pagingIcon"
       :class="page === lastPage ? 'disabled' : 'enabled'"
       @click="page = lastPage"
@@ -68,36 +73,13 @@ export default {
   components: { FontAwesomeIcon },
   // TODO: Prop validation
   props: {
-    numberOfitems: Number,
-    itemsPerPage: Number,
+    numberOfitems: { type: Number, required: true },
+    itemsPerPage: { type: Number, default: 10 },
   },
   data() {
     return {
       page: 1,
     };
-  },
-  created() {
-    this.$emit("update:startIndex", this.startIndex);
-    this.$emit("update:endIndex", this.endIndex);
-  },
-  watch: {
-    numberOfitems() {
-      this.page = 1;
-    },
-    startIndex() {
-      if (this.isValidPage) this.$emit("update:startIndex", this.startIndex);
-    },
-    endIndex() {
-      if (this.isValidPage) this.$emit("update:endIndex", this.endIndex);
-    },
-    page(newval, oldval) {
-      if (newval === "") return;
-      if (!Number.isInteger(newval)) this.page = Math.floor(newval);
-
-      if (isNaN(this.page)) this.page = oldval;
-      else if (this.page < 1) this.page = oldval;
-      else if (this.page > this.lastPage) this.page = oldval;
-    },
   },
   computed: {
     lastPage() {
@@ -119,6 +101,29 @@ export default {
       if (this.page > this.lastPage) return false;
       return true;
     },
+  },
+  watch: {
+    numberOfitems() {
+      this.page = 1;
+    },
+    startIndex() {
+      if (this.isValidPage) this.$emit("update:startIndex", this.startIndex);
+    },
+    endIndex() {
+      if (this.isValidPage) this.$emit("update:endIndex", this.endIndex);
+    },
+    page(newval, oldval) {
+      if (newval === "") return;
+      if (!Number.isInteger(newval)) this.page = Math.floor(newval);
+
+      if (isNaN(this.page)) this.page = oldval;
+      else if (this.page < 1) this.page = oldval;
+      else if (this.page > this.lastPage) this.page = oldval;
+    },
+  },
+  created() {
+    this.$emit("update:startIndex", this.startIndex);
+    this.$emit("update:endIndex", this.endIndex);
   },
 };
 </script>

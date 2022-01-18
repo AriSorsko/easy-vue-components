@@ -2,19 +2,19 @@
   <div>
     <EasyTable
       id="teamsTable"
-      :showTableEasySearch="true"
+      :show-table-easy-search="true"
       :groups="groups"
-      :fixedHeader="true"
-      :enableDetailRowAccordian="true"
-      :onlyShowOneDetailRow="true"
+      :fixed-header="true"
+      :enable-detail-row-accordian="true"
+      :only-show-one-detail-row="true"
       :columns="columns"
       :rows="teams"
-      :rowsPerPage="16"
-      :highlightOptions="highlightOptions"
-      :enableRadioButtons="true"
-      :selectedItem.sync="selectedItem"
-      :enableCheckBoxes="true"
-      :selectedItems.sync="selectedItems"
+      :rows-per-page="16"
+      :highlight-options="highlightOptions"
+      :enable-radio-buttons="true"
+      :selected-item.sync="selectedItem"
+      :enable-check-boxes="true"
+      :selected-items.sync="selectedItems"
     >
       <!-- 
       :enableSearchFilter="false"
@@ -29,7 +29,9 @@
       <template v-slot:noDataMessage>
         No Data here!
       </template> -->
-      <template v-slot:headerLosses="group"> {{ group.header }} :'( </template>
+      <template v-slot:headerLosses="group">
+        {{ group.header }} :'(
+      </template>
       <template v-slot:expandedDetailRowIcon>
         <font-awesome-icon icon="minus" />
       </template>

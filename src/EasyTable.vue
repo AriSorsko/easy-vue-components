@@ -2,13 +2,19 @@
   <div>
     <Search
       v-if="showTableEasySearch"
-      :searchTerm.sync="searchTerm"
-      :highlightQuerySelector="enableSearchHighlight ? '#tableContainer' : null"
-      :highlightOptions="highlightOptions"
       ref="easySearch"
+      :search-term.sync="searchTerm"
+      :highlight-query-selector="
+        enableSearchHighlight ? '#tableContainer' : null
+      "
+      :highlight-options="highlightOptions"
     />
 
-    <div id="tableContainer" :style="columnWidthsStyle" ref="tableContainer">
+    <div
+      id="tableContainer"
+      ref="tableContainer"
+      :style="columnWidthsStyle"
+    >
       <!-- Empty div to keep the headers lined up with their columns when there are exapnd/collapse buttons  -->
       <div v-if="enableDetailRowAccordian" />
       <!-- Empty div to keep the headers lined up with their columns when there are radio buttons  -->
@@ -16,20 +22,23 @@
       <!-- Toggle all of the check boxes  -->
       <input
         v-if="enableCheckBoxes"
-        type="checkbox"
-        v-model="allChecked"
         ref="checkAll"
+        v-model="allChecked"
+        type="checkbox"
         :indeterminate.prop="someChecked"
-      />
+      >
       <!-- Headings -->
       <div
         v-for="(column, index) in columns"
         :key="column.header"
+        :ref="'headerCell_' + index"
         class="headerCell"
         :class="generateHeaderClasses(column.property, index)"
-        :ref="'headerCell_' + index"
       >
-        <slot :name="generateSlotName('header', column.header)" v-bind="column">
+        <slot
+          :name="generateSlotName('header', column.header)"
+          v-bind="column"
+        >
           {{ column.header }}
         </slot>
 
@@ -38,20 +47,33 @@
           @click="reverseSort(column.property)"
         >
           <slot
+            v-if="arrowDirection[column.property] === 'ascending'"
             name="sortAscendingIcon"
             v-bind="column"
-            v-if="arrowDirection[column.property] === 'ascending'"
           >
-            <font-awesome-icon icon="arrow-down" :ref="'arrowDown_' + index" />
+            <font-awesome-icon
+              :ref="'arrowDown_' + index"
+              icon="arrow-down"
+            />
           </slot>
-          <slot name="sortDescendingIcon" v-bind="column" v-else>
-            <font-awesome-icon icon="arrow-up" :ref="'arrowUp_' + index" />
+          <slot
+            v-else
+            name="sortDescendingIcon"
+            v-bind="column"
+          >
+            <font-awesome-icon
+              :ref="'arrowUp_' + index"
+              icon="arrow-up"
+            />
           </slot>
         </span>
       </div>
 
       <!-- No table data -->
-      <div v-if="!rows || rows.length === 0" class="spanAllColumns">
+      <div
+        v-if="!rows || rows.length === 0"
+        class="spanAllColumns"
+      >
         <slot name="noDataMessage">
           There is no data for this table.
         </slot>
@@ -66,7 +88,10 @@
       </div>
 
       <!-- Data Rows -->
-      <div v-else class="makeGridIgnoreDiv">
+      <div
+        v-else
+        class="makeGridIgnoreDiv"
+      >
         <div
           v-for="(group, gindex) in internalGroups"
           :key="gindex"
@@ -74,10 +99,13 @@
         >
           <!-- Group Header -->
           <div
-            class="spanAllColumns groupHeader row"
             v-if="showGroupHeader(group)"
+            class="spanAllColumns groupHeader row"
           >
-            <slot name="groupHeader" v-bind="group.originalGroup">
+            <slot
+              name="groupHeader"
+              v-bind="group.originalGroup"
+            >
               {{ group.header }}
             </slot>
           </div>
@@ -93,19 +121,25 @@
           >
             <!-- Expand/Collapse controls for the details row -->
             <div v-if="enableDetailRowAccordian">
-              <div v-if="row.detailRowOpen" @click="collapseRow(row)">
+              <div
+                v-if="row.detailRowOpen"
+                @click="collapseRow(row)"
+              >
                 <slot name="expandedDetailRowIcon">
                   <font-awesome-icon
-                    icon="angle-down"
                     :ref="'angleDown_' + rindex"
+                    icon="angle-down"
                   />
                 </slot>
               </div>
-              <div v-else @click="expandRow(row)">
+              <div
+                v-else
+                @click="expandRow(row)"
+              >
                 <slot name="collapsedDetailRowIcon">
                   <font-awesome-icon
-                    icon="angle-right"
                     :ref="'angleRight_' + rindex"
+                    icon="angle-right"
                   />
                 </slot>
               </div>
@@ -114,42 +148,48 @@
             <!-- Radio buttons -->
             <input
               v-if="enableRadioButtons"
-              type="radio"
               :id="rindex"
-              :value="row.originalRow"
-              v-model="internalSelectedItem"
               :ref="'radio_' + rindex"
-            />
+              v-model="internalSelectedItem"
+              type="radio"
+              :value="row.originalRow"
+            >
 
             <!-- Check boxes -->
             <input
               v-if="enableCheckBoxes"
-              type="checkbox"
               :id="rindex"
-              :value="row.originalRow"
-              v-model="internalSelectedItems"
               :ref="'check_' + rindex"
-            />
+              v-model="internalSelectedItems"
+              type="checkbox"
+              :value="row.originalRow"
+            >
 
             <!-- Columns for the row -->
             <div
               v-for="(column, cindex) in columns"
               :key="column.property + cindex"
-              :class="generateCellClasses(column, cindex, rindex, row)"
               :ref="'rowCell_' + gindex + '_' + rindex + '_' + cindex"
+              :class="generateCellClasses(column, cindex, rindex, row)"
             >
-              <slot :name="column.property" v-bind="row.originalRow">
+              <slot
+                :name="column.property"
+                v-bind="row.originalRow"
+              >
                 {{ getCellValue(row, column) }}
               </slot>
             </div>
 
             <!-- Detail row -->
             <div
-              class="spanAllColumns"
-              :key="'detailRow' + rindex"
               v-if="!enableDetailRowAccordian || row.detailRowOpen"
+              :key="'detailRow' + rindex"
+              class="spanAllColumns"
             >
-              <slot name="detailRowSlot" v-bind="row.originalRow" />
+              <slot
+                name="detailRowSlot"
+                v-bind="row.originalRow"
+              />
             </div>
           </div>
         </div>
@@ -160,10 +200,10 @@
       v-if="enablePaging"
       id="pagingControls"
       class="pagingControls"
-      :numberOfitems="totalRows"
-      :itemsPerPage="rowsPerPage"
-      :startIndex.sync="startIndex"
-      :endIndex.sync="endIndex"
+      :number-ofitems="totalRows"
+      :items-per-page="rowsPerPage"
+      :start-index.sync="startIndex"
+      :end-index.sync="endIndex"
     />
   </div>
 </template>
@@ -260,7 +300,7 @@ export default {
   components: { FontAwesomeIcon, EasyPages, Search },
   props: {
     columns: { type: Array, required: true },
-    rows: { type: Array },
+    rows: { type: Array, required: true },
     fixedHeader: {
       type: Boolean,
       default: false,
@@ -289,7 +329,9 @@ export default {
       type: Boolean,
       default: false,
     },
+    // eslint-disable-next-line vue/require-default-prop
     rowsPerPage: Number,
+    // eslint-disable-next-line vue/require-default-prop
     groups: Array,
     showTableEasySearch: {
       type: Boolean,
@@ -323,83 +365,6 @@ export default {
       startIndex: 0,
       endIndex: 0,
     };
-  },
-  created() {
-    // Error checking
-    let validProps = this.errorPropValidations();
-    if (!validProps) return;
-    if (!this.rows) return;
-
-    // Handle sorting setup
-    let sortableColumns = this.columns.filter((c) => {
-      return c.sort && typeof c.sort.priority === "number" && c.sort.direction;
-    });
-    sortableColumns = sortBy(sortableColumns, ["sort.priority"]);
-    sortableColumns = reverse(sortableColumns);
-    sortableColumns.forEach((sortableColumn) => {
-      this.columnSortDirection.push({
-        property: sortableColumn.property,
-        direction: sortableColumn.sort.direction,
-        format: sortableColumn.format,
-        sortBy: sortableColumn.sortBy,
-      });
-      this.arrowDirection[sortableColumn.property] =
-        sortableColumn.sort.direction;
-    });
-
-    // Handle internal rows setup
-    let groupedRows = this.groupRows(this.rows);
-
-    // The detail rows with accordian controls get really hinky
-    // given that 1) the *original* object needs to be preserved
-    // so users can "===" on them and it works as expected for the
-    // selectedItem and selectedItems. 2) The table supports having
-    // multiple copies of the same object in different groups. 3)
-    // filtering changes the index of objects in the visible rows.
-    // Because of 1 and 2 the object can't be used to determine if
-    // a detail row is open while 2 and 3 make using indexs challening.
-    // So instead, each row will be its own object, with the state of
-    // the detail row and a reference to the original object. Makes
-    // the rest of the code a bit more convoluted, but that is the
-    // least bad option.
-    this.internalRows = groupedRows.map((row) => {
-      return {
-        originalRow: row,
-        detailRowOpen: !this.enableDetailRowAccordian,
-      };
-    });
-
-    // Handle radio buttons setup
-    if (this.selectedItem) {
-      if (this.internalRows.find((r) => r.originalRow === this.selectedItem))
-        this.internalSelectedItem = this.selectedItem;
-      else {
-        console.warn(
-          "The 'selectedItem' prop is not one of the objects in the rows: ",
-          this.selectedItem
-        );
-      }
-    }
-
-    // Handle checkboxes setup
-    if (this.selectedItems) {
-      this.internalSelectedItems = intersection(
-        this.selectedItems,
-        this.uniqueOriginalRows
-      );
-    }
-
-    this.warningPropValidations();
-  },
-  watch: {
-    internalSelectedItem() {
-      this.$emit("update:selectedItem", this.internalSelectedItem);
-      this.$emit("selectedItemChanged", this.internalSelectedItem);
-    },
-    internalSelectedItems() {
-      this.$emit("update:selectedItems", this.internalSelectedItems);
-      this.$emit("selectedItemsChanged", this.internalSelectedItems);
-    },
   },
   computed: {
     enablePaging() {
@@ -481,6 +446,83 @@ export default {
     uniqueOriginalRows() {
       return uniq(this.internalRows.map((r) => r.originalRow));
     },
+  },
+  watch: {
+    internalSelectedItem() {
+      this.$emit("update:selectedItem", this.internalSelectedItem);
+      this.$emit("selectedItemChanged", this.internalSelectedItem);
+    },
+    internalSelectedItems() {
+      this.$emit("update:selectedItems", this.internalSelectedItems);
+      this.$emit("selectedItemsChanged", this.internalSelectedItems);
+    },
+  },
+  created() {
+    // Error checking
+    let validProps = this.errorPropValidations();
+    if (!validProps) return;
+    if (!this.rows) return;
+
+    // Handle sorting setup
+    let sortableColumns = this.columns.filter((c) => {
+      return c.sort && typeof c.sort.priority === "number" && c.sort.direction;
+    });
+    sortableColumns = sortBy(sortableColumns, ["sort.priority"]);
+    sortableColumns = reverse(sortableColumns);
+    sortableColumns.forEach((sortableColumn) => {
+      this.columnSortDirection.push({
+        property: sortableColumn.property,
+        direction: sortableColumn.sort.direction,
+        format: sortableColumn.format,
+        sortBy: sortableColumn.sortBy,
+      });
+      this.arrowDirection[sortableColumn.property] =
+        sortableColumn.sort.direction;
+    });
+
+    // Handle internal rows setup
+    let groupedRows = this.groupRows(this.rows);
+
+    // The detail rows with accordian controls get really hinky
+    // given that 1) the *original* object needs to be preserved
+    // so users can "===" on them and it works as expected for the
+    // selectedItem and selectedItems. 2) The table supports having
+    // multiple copies of the same object in different groups. 3)
+    // filtering changes the index of objects in the visible rows.
+    // Because of 1 and 2 the object can't be used to determine if
+    // a detail row is open while 2 and 3 make using indexs challening.
+    // So instead, each row will be its own object, with the state of
+    // the detail row and a reference to the original object. Makes
+    // the rest of the code a bit more convoluted, but that is the
+    // least bad option.
+    this.internalRows = groupedRows.map((row) => {
+      return {
+        originalRow: row,
+        detailRowOpen: !this.enableDetailRowAccordian,
+      };
+    });
+
+    // Handle radio buttons setup
+    if (this.selectedItem) {
+      if (this.internalRows.find((r) => r.originalRow === this.selectedItem))
+        this.internalSelectedItem = this.selectedItem;
+      else {
+        console.warn(
+          "The 'selectedItem' prop is not one of the objects in the rows: ",
+          this.selectedItem
+        );
+      }
+    }
+
+    // Handle checkboxes setup
+    if (this.selectedItems) {
+      this.internalSelectedItems = intersection(
+        this.selectedItems,
+        this.uniqueOriginalRows
+      );
+    }
+
+    this.warningPropValidations();
   },
   methods: {
     groupRows(rows) {
@@ -863,7 +905,6 @@ export default {
       });
 
       // css classes
-      
     },
     expandRow(row) {
       if (this.onlyShowOneDetailRow) {

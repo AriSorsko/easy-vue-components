@@ -18,6 +18,8 @@ let GlobalVue = null;
 if (typeof window !== "undefined") {
   GlobalVue = window.Vue;
 } else if (typeof global !== "undefined") {
+  // In this case find vue in the global browser's scope instead of here
+  // eslint-disable-next-line no-undef
   GlobalVue = global.Vue;
 }
 if (GlobalVue) {
