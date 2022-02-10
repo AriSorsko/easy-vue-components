@@ -29,9 +29,7 @@
       <template v-slot:noDataMessage>
         No Data here!
       </template> -->
-      <template v-slot:headerLosses="group">
-        {{ group.header }} :'(
-      </template>
+      <template v-slot:headerLosses="group"> {{ group.header }} :'( </template>
       <template v-slot:expandedDetailRowIcon>
         <font-awesome-icon icon="minus" />
       </template>

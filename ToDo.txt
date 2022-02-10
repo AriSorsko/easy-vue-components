@@ -1,15 +1,13 @@
 test all forms of installation (vue.use() and with script)
 Optional options for Columns:
     excludeFromSearch- also add this to the mark.js exclude options
-Documentation
-Vertically center by default?
 If a "Header" field is not provided in the column object, use the field name instead
 Add support for calculated Columns
 Add support for calculated rows
 Should no columns prop just show all columns? 
 groupable columns
 add column to cell format and class functions
-
+Documentation
 
 Post 1.0:
 dynamic load more rows on scroll to bottom of table
